@@ -1,4 +1,4 @@
-import cifpairwaypoint as cp
+import cifparse.cifpenroutepoint as cp
 import cifpfunctions as cf
 
 
