@@ -8,9 +8,12 @@ from .cifp_waypoint import CIFPWaypoint
 class CIFPAirport:
     def __init__(self) -> None:
         self.area = None
-        self.id = None
+        self.sec_code = None
+        self.airport_id = None
         self.region = None
+        self.sub_code = None
         self.iata = None
+        self.cont_rec_no = None
         self.limit_alt = None
         self.longest = None
         self.is_ifr = None
@@ -34,7 +37,6 @@ class CIFPAirport:
         self.cycle_data = None
         self.points: list[CIFPWaypoint] = []
         self.loc_gs: list[CIFP_LOC_GS] = []
-        self.dme: list[CIFP_VHF_DME] = []
         self.departures: list[CIFPProcedure] = []
         self.arrivals: list[CIFPProcedure] = []
         self.approaches: list[CIFPProcedure] = []
@@ -102,17 +104,17 @@ class CIFPAirport:
     def _sec_A(self, cifp_line: str) -> None:
         # PAD 1
         self.area = cifp_line[1:4].strip()
-        # self._sec_code = cifp_line[4:5].strip()
+        self._sec_code = cifp_line[4:5].strip()
         # PAD 1
-        self.id = cifp_line[6:10].strip()
+        self.airport_id = cifp_line[6:10].strip()
         self.region = cifp_line[10:12].strip()
-        # sub_code = cifp_line[12:13].strip()
+        self.sub_code = cifp_line[12:13].strip()
         self.iata = cifp_line[13:16].strip()
         # PAD 5
-        # cont_rec_no = int(cifp_line[21:22].strip())
+        self.cont_rec_no = int(cifp_line[21:22].strip())
         speed_limit_alt = cifp_line[22:27].strip()
         longest_runway = cifp_line[27:30].strip()
-        self.is_ifr = cifp_line[30:31].strip()
+        is_ifr = cifp_line[30:31].strip()
         self.longest_surface = cifp_line[31:32].strip()
         lat_lon = cifp_line[32:51].strip()
         variation = cifp_line[51:56].strip()
@@ -139,6 +141,9 @@ class CIFPAirport:
 
         if longest_runway != "":
             self.longest = int(longest_runway)
+
+        if is_ifr != "":
+            self.is_ifr = yn_to_bool(is_ifr)
 
         if lat_lon != "":
             coordinates = convert_dms(lat_lon)
@@ -176,11 +181,6 @@ class CIFPAirport:
         loc_gs.from_lines([cifp_line])
         self.loc_gs.append(loc_gs)
 
-    def _add_dme(self, cifp_line: str) -> None:
-        dme = CIFP_VHF_DME()
-        dme.from_lines([cifp_line])
-        self.dme.append(dme)
-
     def to_dict(self) -> dict:
         points = []
         for item in self.points:
@@ -189,10 +189,6 @@ class CIFPAirport:
         loc_gs = []
         for item in self.loc_gs:
             loc_gs.append(item.to_dict())
-
-        dme = []
-        for item in self.dme:
-            dme.append(item.to_dict())
 
         departures = []
         for item in self.departures:
@@ -212,9 +208,12 @@ class CIFPAirport:
 
         return {
             "area": clean_value(self.area),
-            "id": clean_value(self.id),
+            "sec_code": clean_value(self.sec_code),
+            "airport_id": clean_value(self.airport_id),
             "region": clean_value(self.region),
+            "sub_code": clean_value(self.sub_code),
             "iata": clean_value(self.iata),
+            "cont_rec_no": clean_value(self.cont_rec_no),
             "limit_alt": clean_value(self.limit_alt),
             "longest": clean_value(self.longest),
             "is_ifr": clean_value(self.is_ifr),
@@ -238,7 +237,6 @@ class CIFPAirport:
             "cycle_data": clean_value(self.cycle_data),
             "points": points,
             "loc_gs": loc_gs,
-            "dme": dme,
             "departures": departures,
             "arrivals": arrivals,
             "approaches": approaches,
