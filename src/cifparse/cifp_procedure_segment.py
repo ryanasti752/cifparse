@@ -1,295 +1,164 @@
-import cifpfunctions as cf
-import cifparse.cifpterminalpoint as cp
-import cifpproceduresubsegment as cs
+from cifp_functions import chunk, clean_value
+from cifp_terminal_point import CIFPTerminalPoint
+from cifp_procedure_subsegment import CIFPProcedureSubsegment
 
 
 class CIFPProcedureSegment:
-    def __init__(self, cifpLines: list) -> None:
-        initial = str(cifpLines[0])
-        subCode = initial[12:13].strip()
-        routeType = initial[19:20].strip()
-        self.type = self.translateRouteType(subCode, routeType)
-        self.transitions = []
-        self.points = []
+    def __init__(self) -> None:
+        self.type = None
+        self.transitions: list[CIFPProcedureSubsegment] = []
+        self.points: list[CIFPTerminalPoint] = []
 
-        isCore = self.determineCore(subCode, routeType)
-        if isCore:
-            for cifpLine in cifpLines:
-                contRecNo = int(cifpLine[38:39])
-                if contRecNo == 0 or contRecNo == 1:
-                    self.cont0(cifpLine)
-            del self.transitions
+    def from_lines(self, cifp_lines: list) -> None:
+        initial = str(cifp_lines[0])
+        sub_code = initial[12:13].strip()
+        route_type = initial[19:20].strip()
+        self.type = self._translate_route_type(sub_code, route_type)
+
+        is_core = self._determine_core(sub_code, route_type)
+        if is_core:
+            for cifp_line in cifp_lines:
+                cont_rec_no = int(cifp_line[38:39])
+                if cont_rec_no == 0 or cont_rec_no == 1:
+                    self._cont0(cifp_line)
         else:
-            functions = cf.CIFPFunctions()
-            subChunked = functions.chunk(cifpLines, 20, 25)
-            for subChunk in subChunked:
-                transition = cs.CIFPProcedureSubsegment(subChunk)
-                self.transitions.append(transition.toDict())
-            del self.points
+            sub_chunked = chunk(cifp_lines, 20, 25)
+            for sub_chunk in sub_chunked:
+                transition = CIFPProcedureSubsegment()
+                transition.from_lines(sub_chunk)
+                self.transitions.append(transition)
 
-    def cont0(self, cifpLine: str) -> None:
-        # PAD 1
-        area = cifpLine[1:4].strip()
-        secCode = cifpLine[4:5].strip()
-        # PAD 1
-        airportId = cifpLine[6:10].strip()
-        airportRegion = cifpLine[10:12].strip()
-        subCode = cifpLine[12:13].strip()
-        id = cifpLine[13:19].strip()
-        routeType = cifpLine[19:20].strip()
-        transitionId = cifpLine[20:25].strip()
-        # PAD 1
-        seqNo = int(cifpLine[26:29].strip())
-        fixId = cifpLine[29:34].strip()
-        fixRegion = cifpLine[34:36].strip()
-        fixSecCode2 = cifpLine[36:37].strip()
-        fixSubCode2 = cifpLine[37:38].strip()
-        # contRecNo = int(cifpLine[38:39])
-        descCode = cifpLine[39:43]
-        turnDir = cifpLine[43:44].strip()
-        rnp = cifpLine[44:47].strip()
-        pathTerm = cifpLine[47:49].strip()
-        tdv = cifpLine[49:50].strip()
-        recvhf = cifpLine[50:54].strip()
-        vhfRegion = cifpLine[54:56].strip()
-        arcRad = cifpLine[56:62].strip()
-        arcRadius = None
-        thetaS = cifpLine[62:66].strip()
-        theta = None
-        rhoS = cifpLine[66:70].strip()
-        rho = None
-        crs = cifpLine[70:74].strip()
-        magCrs = None
-        distance = cifpLine[74:78].strip()
-        dist = None
-        time = None
-        vhfSecCode = cifpLine[78:79].strip()
-        vhfSubCode = cifpLine[79:80].strip()
-        # PAD 2
-        altDesc = cifpLine[82:83].strip()
-        atc = cifpLine[83:84].strip()
-        altitude = cifpLine[84:89].strip()
-        alt = None
-        flightLevel = None
-        alt2 = cifpLine[89:94].strip()
-        transAltitude = cifpLine[94:99].strip()
-        transAlt = None
-        speed = cifpLine[99:102].strip()
-        speedLimit = None
-        verticalAngle = cifpLine[102:106].strip()
-        vertAngle = None
-        centerFix = cifpLine[106:111].strip()
-        multCode = cifpLine[111:112].strip()
-        centerFixRegion = cifpLine[112:114].strip()
-        centerFixSecCode = cifpLine[114:115].strip()
-        centerFixSubCode = cifpLine[115:116].strip()
-        gnsFMSId = cifpLine[116:117].strip()
-        speedLimit2 = cifpLine[117:118].strip()
-        rteQual1 = cifpLine[118:119].strip()
-        rteQual2 = cifpLine[119:120].strip()
-        # PAD 3
-        recordNo = int(cifpLine[123:128].strip())
-        cycleData = cifpLine[128:132].strip()
+    def _cont0(self, cifp_line: str) -> None:
+        point = CIFPTerminalPoint()
+        point.from_line(cifp_line)
+        self.points.append(point)
 
-        if arcRad != "":
-            arcRadius = int(arcRad) / 1000
-        del arcRad
-
-        if thetaS != "":
-            theta = int(thetaS) / 10
-        del thetaS
-
-        if rhoS != "":
-            rho = int(rhoS) / 10
-        del rhoS
-
-        if crs != "":
-            magCrs = int(crs) / 10
-        del crs
-
-        if distance != "":
-            if distance.startswith("T"):
-                time = int(distance[1:]) / 10
-            else:
-                dist = int(distance) / 10
-        del distance
-
-        if altitude != "":
-            if altitude.startswith("FL"):
-                flightLevel = int(altitude[2:])
-            else:
-                alt = int(altitude)
-        del altitude
-
-        if transAltitude != "":
-            transAlt = int(transAltitude)
-        del transAltitude
-
-        if speed != "":
-            speedLimit = int(speed)
-        del speed
-
-        if verticalAngle != "":
-            vertAngle = int(verticalAngle)
-        del verticalAngle
-
-        point = cp.ProcedurePoint(
-            seqNo,
-            fixId,
-            fixRegion,
-            fixSecCode2,
-            fixSubCode2,
-            descCode,
-            turnDir,
-            rnp,
-            pathTerm,
-            tdv,
-            recvhf,
-            vhfRegion,
-            arcRadius,
-            theta,
-            rho,
-            magCrs,
-            dist,
-            time,
-            vhfSecCode,
-            vhfSubCode,
-            altDesc,
-            atc,
-            alt,
-            flightLevel,
-            alt2,
-            transAlt,
-            speedLimit,
-            vertAngle,
-            centerFix,
-            multCode,
-            centerFixRegion,
-            centerFixSecCode,
-            centerFixSubCode,
-            gnsFMSId,
-            speedLimit2,
-            rteQual1,
-            rteQual2,
-            recordNo,
-            cycleData,
-        )
-        self.points.append(point.toDict())
-
-    def determineCore(self, subCode: str, routeType: str) -> bool:
+    def _determine_core(self, sub_code: str, route_type: str) -> bool:
         result = False
-        if subCode == "D":
+        if sub_code == "D":
             if (
-                routeType == "0"
-                or routeType == "2"
-                or routeType == "5"
-                or routeType == "M"
+                route_type == "0"
+                or route_type == "2"
+                or route_type == "5"
+                or route_type == "M"
             ):
                 result = True
-        if subCode == "E":
+        if sub_code == "E":
             if (
-                routeType == "2"
-                or routeType == "5"
-                or routeType == "8"
-                or routeType == "M"
+                route_type == "2"
+                or route_type == "5"
+                or route_type == "8"
+                or route_type == "M"
             ):
                 result = True
-        if subCode == "F":
-            if routeType != "A" and routeType != "Z":
+        if sub_code == "F":
+            if route_type != "A" and route_type != "Z":
                 result = True
         return result
 
-    def translateRouteType(self, subCode: str, routeType: str) -> str | None:
+    def _translate_route_type(self, sub_code: str, route_type: str) -> str | None:
         result = None
-        if subCode == "D":
-            if routeType == "0":
+        if sub_code == "D":
+            if route_type == "0":
                 result = "eosid"
             if (
-                routeType == "1"
-                or routeType == "4"
-                or routeType == "F"
-                or routeType == "T"
+                route_type == "1"
+                or route_type == "4"
+                or route_type == "F"
+                or route_type == "T"
             ):
                 result = "runway_transition"
-            if routeType == "2" or routeType == "5" or routeType == "M":
+            if route_type == "2" or route_type == "5" or route_type == "M":
                 result = "core"
             if (
-                routeType == "3"
-                or routeType == "6"
-                or routeType == "S"
-                or routeType == "V"
+                route_type == "3"
+                or route_type == "6"
+                or route_type == "S"
+                or route_type == "V"
             ):
                 result = "transition"
-        if subCode == "E":
+        if sub_code == "E":
             if (
-                routeType == "1"
-                or routeType == "4"
-                or routeType == "7"
-                or routeType == "F"
+                route_type == "1"
+                or route_type == "4"
+                or route_type == "7"
+                or route_type == "F"
             ):
                 result = "transition"
             if (
-                routeType == "2"
-                or routeType == "5"
-                or routeType == "8"
-                or routeType == "M"
+                route_type == "2"
+                or route_type == "5"
+                or route_type == "8"
+                or route_type == "M"
             ):
                 result = "core"
             if (
-                routeType == "3"
-                or routeType == "6"
-                or routeType == "9"
-                or routeType == "S"
+                route_type == "3"
+                or route_type == "6"
+                or route_type == "9"
+                or route_type == "S"
             ):
                 result = "runway_transition"
-        if subCode == "F":
-            if routeType == "A":
+        if sub_code == "F":
+            if route_type == "A":
                 result = "transition"
-            if routeType == "B":
+            if route_type == "B":
                 result = "LOC/BC"
-            if routeType == "D":
+            if route_type == "D":
                 result = "VOR/DME"
-            if routeType == "F":
+            if route_type == "F":
                 result = "FMS"
-            if routeType == "G":
+            if route_type == "G":
                 result = "IGS"
-            if routeType == "H":
+            if route_type == "H":
                 result = "RNP"
-            if routeType == "I":
+            if route_type == "I":
                 result = "ILS"
-            if routeType == "J":
+            if route_type == "J":
                 result = "GNSS"
-            if routeType == "L":
+            if route_type == "L":
                 result = "LOC"
-            if routeType == "M":
+            if route_type == "M":
                 result = "MLS"
-            if routeType == "N":
+            if route_type == "N":
                 result = "NDB"
-            if routeType == "P":
+            if route_type == "P":
                 result = "GPS"
-            if routeType == "Q":
+            if route_type == "Q":
                 result = "NDB/DME"
-            if routeType == "R":
+            if route_type == "R":
                 result = "RNAV"
-            if routeType == "S":
+            if route_type == "S":
                 result = "VORTAC"
-            if routeType == "T":
+            if route_type == "T":
                 result = "TACAN"
-            if routeType == "U":
+            if route_type == "U":
                 result = "SDF"
-            if routeType == "V":
+            if route_type == "V":
                 result = "VOR"
-            if routeType == "W":
+            if route_type == "W":
                 result = "MLS-A"
-            if routeType == "X":
+            if route_type == "X":
                 result = "LDA"
-            if routeType == "Y":
+            if route_type == "Y":
                 result = "MLS-B/C"
-            if routeType == "Z":
+            if route_type == "Z":
                 result = "Missed"
         return result
 
-    def toDict(self) -> dict:
-        functions = cf.CIFPFunctions()
-        functions.cleanDict(self.__dict__)
-        return self.__dict__
+    def to_dict(self) -> dict:
+        if len(self.transitions) > 0:
+            transitions = []
+            for item in self.transitions:
+                transitions.append(item.to_dict())
+
+            return {"type": clean_value(self.type), "transitions": transitions}
+
+        points = []
+        for item in self.points:
+            points.append(item.to_dict())
+
+        return {
+            "type": self.type,
+            "points": points,
+        }
