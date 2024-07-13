@@ -241,7 +241,7 @@ class CIFP:
         print(f'Finding VHF/DME navaid with ID "{vhf_dme_id}"')
         result = None
         for vhf_dme in self._vhf_dme:
-            if vhf_dme.id == vhf_dme_id:
+            if vhf_dme.vhf_id == vhf_dme_id:
                 result = vhf_dme
         return result
 

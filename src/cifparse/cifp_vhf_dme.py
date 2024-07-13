@@ -8,8 +8,8 @@ class CIFP_VHF_DME:
         self.sub_code = None
         self.airport_id = None
         self.airport_region = None
-        self.id = None
-        self.region = None
+        self.vhf_id = None
+        self.vhf_region = None
         self.frequency = None
         self.nav_class = None
         self.lat = None
@@ -45,9 +45,9 @@ class CIFP_VHF_DME:
         self.airport_id = cifp_line[6:10].strip()
         self.airport_region = cifp_line[10:12].strip()
         # PAD 1
-        self.id = cifp_line[13:17].strip()
+        self.vhf_id = cifp_line[13:17].strip()
         # PAD 2
-        self.region = cifp_line[19:21].strip()
+        self.vhf_region = cifp_line[19:21].strip()
         # self.cont_rec_no = int(cifp_line[21:22].strip())
         freq = cifp_line[22:27].strip()
         self.nav_class = cifp_line[27:32].strip()
@@ -96,8 +96,8 @@ class CIFP_VHF_DME:
             "sub_code": clean_value(self.sub_code),
             "airport_id": clean_value(self.airport_id),
             "airport_region": clean_value(self.airport_region),
-            "id": clean_value(self.id),
-            "region": clean_value(self.region),
+            "vhf_id": clean_value(self.vhf_id),
+            "vhf_region": clean_value(self.vhf_region),
             "frequency": clean_value(self.frequency),
             "nav_class": clean_value(self.nav_class),
             "lat": clean_value(self.lat),
