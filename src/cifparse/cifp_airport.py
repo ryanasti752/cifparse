@@ -140,7 +140,7 @@ class CIFPAirport:
             self.limit_alt = int(speed_limit_alt)
 
         if longest_runway != "":
-            self.longest = int(longest_runway)
+            self.longest = int(longest_runway) * 100
 
         if is_ifr != "":
             self.is_ifr = yn_to_bool(is_ifr)
