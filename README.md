@@ -22,27 +22,48 @@ Given the amount of data, parsing can take a moment. If dumping the data to a fi
 import cifparse
 
 # Initialize the parser:
-c = CIFP()
+from cifparse import CIFP
 
 # Set the path to where you have the CIFP file:
-c.setPath("FAACIFP18")
+c = CIFP("FAACIFP18")
 
 # Parse the data in the file:
 c.parse()
+# ...or to save time, parse only a specific subset:
+c.parse_airports()
+c.parse_heliports()
+c.parse_ndbs()
+c.parse_airways()
+c.parse_vhf_dmes()
+c.parse_waypoints()
+c.parse_controlled()
+c.parse_restrictive()
 
-# All of the results will be in the CIFP object, accessible via getters:
-ndbs = c.getNDBs()
-vors = c.getVHFDMEs()
-fixes = c.getWaypoints()
-airways = c.getAirways()
-airports = c.getAirports()
+# The results will be in the CIFP object, accessible via getters that return lists of the objects:
+airports = c.get_airports()
+heliports = c.get_heliports()
+airways = c.get_airways()
+ndbs = c.get_NDBs()
+vordmes = c.get_VHF_DMEs()
+waypoints = c.get_waypoints()
+controlled = c.get_controlled()
+restrictive = c.get_restrictive()
 
-# To find specific items, use the find functions:
-ndb = c.findNDB("GTN")
-vor = c.findVHFDME("AML")
-fix = c.findWaypoint("RUANE")
-airway = c.findAirway("J146")
-airport = c.findAirport("KIAD")
+# To find specific objects in the lists, use the find functions:
+airport = c.find_airport("KIAD")
+heliport = c.find_heliport("DC03")
+airway = c.find_airway("J146")
+ndb = c.find_NDB("GTN")
+vor = c.find_VHF_DME("AML")
+fix = c.find_waypoint("RAVNN")
+dc_class_b = c.find_controlled("KDCA")
+roa_class_c = c.find_controlled("KROA")
+cho_class_d = c.find_controlled("KCHO")
+moa = c.find_restrictive("DEMO 1 MOA")
+
+# Because the Alert, MOA, Restricted, and Warning airspace can occasionally be named oddly, there is an additional helper function that finds all matches of a particular substring:
+all_5314 = c.find_restrictive_match("5314")
+# Returns: [R-5314A, R-5314B, R-5314C, R-5314D, R-5314E, R-5314F, R-5314H, R-5314J]
 
 # Because of the size of the objects, you may want to dump the results into a json file.
 # To view the dump of a specific airport (KIAD, above), use something like this:
