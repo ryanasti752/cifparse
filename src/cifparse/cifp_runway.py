@@ -18,10 +18,10 @@ class CIFPRunway:
         self.tch = None
         self.width = None
         self.tch_id = None
-        self.vhf_ident = None
+        self.ls_ident = None
         self.cat = None
         self.stopway = None
-        self.vhf_ident_2 = None
+        self.ls_ident_2 = None
         self.cat_2 = None
         self.description = None
         self.record_number = None
@@ -50,10 +50,10 @@ class CIFPRunway:
         thr_cross_height = cifp_line[75:77].strip()
         runway_width = cifp_line[77:80].strip()
         self.tch_id = cifp_line[80:81].strip()
-        self.vhf_ident = cifp_line[81:85].strip()
+        self.ls_ident = cifp_line[81:85].strip()
         self.cat = cifp_line[85:86].strip()
         runway_stopway = cifp_line[86:90].strip()
-        self.vhf_ident_2 = cifp_line[90:94].strip()
+        self.ls_ident_2 = cifp_line[90:94].strip()
         self.cat_2 = cifp_line[94:95].strip()
         # PAD 6
         self.description = cifp_line[101:123].strip()
@@ -109,10 +109,10 @@ class CIFPRunway:
             "tch": clean_value(self.tch),
             "width": clean_value(self.width),
             "tch_id": clean_value(self.tch_id),
-            "vhf_ident": clean_value(self.vhf_ident),
+            "ls_ident": clean_value(self.ls_ident),
             "cat": clean_value(self.cat),
             "stopway": clean_value(self.stopway),
-            "vhf_ident_2": clean_value(self.vhf_ident_2),
+            "ls_ident_2": clean_value(self.ls_ident_2),
             "cat_2": clean_value(self.cat_2),
             "description": clean_value(self.description),
             "record_number": clean_value(self.record_number),
