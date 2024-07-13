@@ -18,6 +18,8 @@ Given the amount of data, parsing can take a moment. If dumping the data to a fi
 
 ## Examples
 
+Start by importing `cifparse`, setting the path to the CIFP file, and then parsing the data.
+
 ```python
 import cifparse
 
@@ -38,18 +40,26 @@ c.parse_vhf_dmes()
 c.parse_waypoints()
 c.parse_controlled()
 c.parse_restrictive()
+```
 
-# The results will be in the CIFP object, accessible via getters that return lists of the objects:
-airports = c.get_airports()
-heliports = c.get_heliports()
-airways = c.get_airways()
-ndbs = c.get_NDBs()
-vordmes = c.get_VHF_DMEs()
-waypoints = c.get_waypoints()
-controlled = c.get_controlled()
-restrictive = c.get_restrictive()
+### Working with Entire Segments
 
-# To find specific objects in the lists, use the find functions:
+After parsing the data, the results will be in the CIFP object, accessible via getters that return lists of the objects.
+
+```python
+all_airports = c.get_airports()
+all_heliports = c.get_heliports()
+all_airways = c.get_airways()
+all_ndbs = c.get_NDBs()
+all_vordmes = c.get_VHF_DMEs()
+all_waypoints = c.get_waypoints()
+all_controlled = c.get_controlled()
+all_restrictive = c.get_restrictive()
+```
+
+### Working with Specific Items
+
+```python
 airport = c.find_airport("KIAD")
 heliport = c.find_heliport("DC03")
 airway = c.find_airway("J146")
@@ -61,12 +71,18 @@ roa_class_c = c.find_controlled("KROA")
 cho_class_d = c.find_controlled("KCHO")
 moa = c.find_restrictive("DEMO 1 MOA")
 
-# Because the Alert, MOA, Restricted, and Warning airspace can occasionally be named oddly, there is an additional helper function that finds all matches of a particular substring:
+# Because the Alert, MOA, Restricted, and Warning airspace can occasionally be named oddly,
+# there is an additional helper function that finds all matches of a particular substring:
 all_5314 = c.find_restrictive_match("5314")
 # Returns: [R-5314A, R-5314B, R-5314C, R-5314D, R-5314E, R-5314F, R-5314H, R-5314J]
+```
 
-# Because of the size of the objects, you may want to dump the results into a json file.
-# To view the dump of a specific airport (KIAD, above), use something like this:
-with open("output.json", "w") as jsonFile:
-    json.dump(airport, jsonFile, indent=2)
+### Exporting Data
+
+Each object has its own `to_dict()` method. This is useful when you need to dump the data to json:
+
+```python
+airport = c.find_airport("KIAD")
+with open("output.json", "w") as json_file:
+    json.dump(airport.to_dict(), json_file, indent=2)
 ```
