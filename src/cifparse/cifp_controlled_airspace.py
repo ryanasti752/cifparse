@@ -14,6 +14,8 @@ class CIFPControlledAirspace:
         self.center_sub_code = None
         self.airspace_class = None
         self.application_type = None
+        self.time_code = None
+        self.notam = None
         self.time_ind = None
         self.op_time_1 = None
         self.op_time_2 = None
@@ -57,15 +59,18 @@ class CIFPControlledAirspace:
 
     def _cont1(self, cifp_line: str) -> None:
         # PAD 25
-        self.application_type = None
-        self.time_ind = None
-        self.op_time_1 = None
-        self.op_time_2 = None
-        self.op_time_3 = None
-        self.op_time_4 = None
-        self.op_time_5 = None
-        self.op_time_6 = None
-        self.op_time_7 = None
+        # cont_rec_no = int(cifp_line[24:25].strip())
+        self.application_type = cifp_line[25:26].strip()
+        self.time_code = cifp_line[26:27].strip()
+        self.notam = cifp_line[27:28].strip()
+        self.time_ind = cifp_line[28:29].strip()
+        self.op_time_1 = cifp_line[29:39].strip()
+        self.op_time_2 = cifp_line[39:49].strip()
+        self.op_time_3 = cifp_line[49:59].strip()
+        self.op_time_4 = cifp_line[59:69].strip()
+        self.op_time_5 = cifp_line[69:79].strip()
+        self.op_time_6 = cifp_line[79:89].strip()
+        self.op_time_7 = cifp_line[89:99].strip()
         self.controlling_agency = cifp_line[99:123].strip()
         # self.record_number = cifp_line[123:128].strip()
         # self.cycle_data = cifp_line[128:132].strip()
