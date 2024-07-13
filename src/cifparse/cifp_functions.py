@@ -48,3 +48,10 @@ def clean_value(value: any) -> any:
     if isinstance(value, str) and value == "":
         return None
     return value
+
+
+def yn_to_bool(text_val: str) -> bool:
+    result = False
+    if text_val.upper() == "Y":
+        result = True
+    return result
