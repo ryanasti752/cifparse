@@ -1,11 +1,13 @@
 from cifp_functions import clean_value
-from cifp_terminal_point import CIFPTerminalPoint
+from cifp_procedure_point import CIFPProcedurePoint
+
+# FOR TRANSITIONS OF PD/PE/PF AND HD/HE/HF
 
 
 class CIFPProcedureSubsegment:
     def __init__(self) -> None:
         self.id = None
-        self.points: list[CIFPTerminalPoint] = []
+        self.points: list[CIFPProcedurePoint] = []
 
     def from_lines(self, cifp_lines: list) -> None:
         initial = str(cifp_lines[0])
@@ -18,7 +20,7 @@ class CIFPProcedureSubsegment:
                 self._cont0(cifp_line)
 
     def _cont0(self, cifp_line: str) -> None:
-        point = CIFPTerminalPoint()
+        point = CIFPProcedurePoint()
         point.from_line(cifp_line)
         self.points.append(point)
 
