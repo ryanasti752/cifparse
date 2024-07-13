@@ -8,13 +8,12 @@ class CIFPWaypoint:
         self.sub_code = None
         self.environment = None
         self.environment_region = None
-        self.id = None
+        self.waypoint_id = None
         self.region = None
         self.type = None
         self.usage = None
         self.lat = None
         self.lon = None
-        self.variation = None
         self.mag_var = None
         self.elevation = None
         self.datum_code = None
@@ -41,7 +40,7 @@ class CIFPWaypoint:
         self.environment = cifp_line[6:10].strip()
         self.environment_region = cifp_line[10:12].strip()
         # PAD 1
-        self.id = cifp_line[13:18].strip()
+        self.waypoint_id = cifp_line[13:18].strip()
         # PAD 1
         self.region = cifp_line[19:21].strip()
         # self.cont_rec_no = int(cifp_line[21:22].strip())
@@ -84,13 +83,12 @@ class CIFPWaypoint:
             "sub_code": clean_value(self.sub_code),
             "environment": clean_value(self.environment),
             "environment_region": clean_value(self.environment_region),
-            "id": clean_value(self.id),
+            "waypoint_id": clean_value(self.waypoint_id),
             "region": clean_value(self.region),
             "type": clean_value(self.type),
             "usage": clean_value(self.usage),
             "lat": clean_value(self.lat),
             "lon": clean_value(self.lon),
-            "variation": clean_value(self.variation),
             "mag_var": clean_value(self.mag_var),
             "elevation": clean_value(self.elevation),
             "datum_code": clean_value(self.datum_code),
