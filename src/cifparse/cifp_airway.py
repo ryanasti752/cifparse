@@ -7,7 +7,7 @@ class CIFPAirway:
         self.area = None
         self.sec_code = None
         self.sub_code = None
-        self.id = None
+        self.airway_id = None
         self.six_char = None
         self.application = None
         self.notes = None
@@ -23,13 +23,13 @@ class CIFPAirway:
                 self._cont1(cifp_line)
 
     def _cont0(self, cifp_line: str) -> None:
-        if self.id == None:
+        if self.airway_id == None:
             # PAD 1
             self.area = cifp_line[1:4].strip()
             self.sec_code = cifp_line[4:5].strip()
             self.sub_code = cifp_line[5:6].strip()
             # PAD 7
-            self.id = cifp_line[13:18].strip()
+            self.airway_id = cifp_line[13:18].strip()
             self.six_char = cifp_line[18:19].strip()
 
         point = CIFPAirwayPoint()
@@ -69,7 +69,7 @@ class CIFPAirway:
             "area": clean_value(self.area),
             "sec_code": clean_value(self.sec_code),
             "sub_code": clean_value(self.sub_code),
-            "id": clean_value(self.id),
+            "airway_id": clean_value(self.airway_id),
             "six_char": clean_value(self.six_char),
             "application": clean_value(self.application),
             "notes": clean_value(self.notes),

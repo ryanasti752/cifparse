@@ -6,7 +6,7 @@ class CIFPAirwayPoint:
         self.area = None
         self.sec_code = None
         self.sub_code = None
-        self.id = None
+        self.airway_id = None
         self.six_char = None
         self.sequence_number = None
         self.point_id = None
@@ -42,7 +42,7 @@ class CIFPAirwayPoint:
         self.sec_code = cifp_line[4:5].strip()
         self.sub_code = cifp_line[5:6].strip()
         # PAD 7
-        self.id = cifp_line[13:18].strip()
+        self.airway_id = cifp_line[13:18].strip()
         self.six_char = cifp_line[18:19].strip()
         # PAD 6
         self.sequence_number = int(cifp_line[26:29].strip())
@@ -101,7 +101,7 @@ class CIFPAirwayPoint:
             self.max_alt = int(maximum_alt)
 
         if fix_rad != "":
-            self.fix_radius = int(fix_rad)
+            self.fix_radius = int(fix_rad) / 10
 
     def set_sig_point(self, sig_point: str):
         self.sig_point = sig_point
@@ -111,7 +111,7 @@ class CIFPAirwayPoint:
             "area": clean_value(self.area),
             "sec_code": clean_value(self.sec_code),
             "sub_code": clean_value(self.sub_code),
-            "id": clean_value(self.id),
+            "airway_id": clean_value(self.airway_id),
             "six_char": clean_value(self.six_char),
             "sequence_number": clean_value(self.sequence_number),
             "point_id": clean_value(self.point_id),
