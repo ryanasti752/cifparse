@@ -1,50 +1,50 @@
-import coordinate as c
+from coordinate import Coordinate
 
 
-class CIFPFunctions:
-    def convertDMS(self, cifpDMSSubstring: str) -> c.Coordinate:
-        latString = cifpDMSSubstring[0:9]
-        lonString = cifpDMSSubstring[9:19]
-        northSouth = latString[0:1]
-        latD = int(latString[1:3])
-        latM = int(latString[3:5])
-        latS = int(latString[5:]) / 100
-        eastWest = lonString[0:1]
-        lonD = int(lonString[1:4])
-        lonM = int(lonString[4:6])
-        lonS = int(lonString[6:]) / 100
-        coord = c.Coordinate()
-        coord.fromDMS(northSouth, latD, latM, latS, eastWest, lonD, lonM, lonS)
-        return coord
+def convert_dms(cifp_dms_substring: str) -> Coordinate:
+    lat_string = cifp_dms_substring[0:9]
+    lon_string = cifp_dms_substring[9:19]
+    north_south = lat_string[0:1]
+    lat_d = int(lat_string[1:3])
+    lat_m = int(lat_string[3:5])
+    lat_s = int(lat_string[5:]) / 100
+    east_west = lon_string[0:1]
+    lon_d = int(lon_string[1:4])
+    lon_m = int(lon_string[4:6])
+    lon_s = int(lon_string[6:]) / 100
+    coord = Coordinate()
+    coord.fromDMS(north_south, lat_d, lat_m, lat_s, east_west, lon_d, lon_m, lon_s)
+    return coord
 
-    def convertMagVar(self, cifpMagVarSubstring: str) -> float:
-        magVarValue = int(cifpMagVarSubstring[1:]) / 10
-        if cifpMagVarSubstring[0:1] == "W":
-            magVarValue = -magVarValue
-        return magVarValue
 
-    def chunk(
-        self,
-        lineArray: list,
-        idStart: int,
-        idStop: int,
-    ) -> list:
-        lastId = ""
-        chunk = []
-        result = []
-        for line in lineArray:
-            currentId = line[idStart:idStop]
-            if currentId != lastId and lastId != "":
-                result.append(chunk)
-                chunk = []
-            chunk.append(line)
-            lastId = currentId
-        if len(chunk) > 0:
+def convert_mag_var(cifp_mag_var_substring: str) -> float:
+    mag_var_value = int(cifp_mag_var_substring[1:]) / 10
+    if cifp_mag_var_substring[0:1] == "W":
+        mag_var_value = -mag_var_value
+    return mag_var_value
+
+
+def chunk(
+    line_array: list,
+    id_start: int,
+    id_stop: int,
+) -> list[list[str]]:
+    last_id = ""
+    chunk = []
+    result = []
+    for line in line_array:
+        current_id = line[id_start:id_stop]
+        if current_id != last_id and last_id != "":
             result.append(chunk)
-        return result
+            chunk = []
+        chunk.append(line)
+        last_id = current_id
+    if len(chunk) > 0:
+        result.append(chunk)
+    return result
 
-    def cleanDict(self, dictionary: dict) -> dict:
-        for item, value in dictionary.items():
-            if value == "":
-                dictionary[item] = None
-        return dictionary
+
+def clean_value(value: any) -> any:
+    if isinstance(value, str) and value == "":
+        return None
+    return value
