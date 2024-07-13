@@ -8,8 +8,8 @@ class CIFP_NDB:
         self.sub_code = None
         self.airport_id = None
         self.airport_region = None
-        self.id = None
-        self.region = None
+        self.ndb_id = None
+        self.ndb_region = None
         self.frequency = None
         self.nav_class = None
         self.lat = None
@@ -38,9 +38,9 @@ class CIFP_NDB:
         self.airport_id = cifp_line[6:10].strip()
         self.airport_region = cifp_line[10:12].strip()
         # PAD 1
-        self.id = cifp_line[13:17].strip()
+        self.ndb_id = cifp_line[13:17].strip()
         # PAD 2
-        self.region = cifp_line[19:21].strip()
+        self.ndb_region = cifp_line[19:21].strip()
         # self.cont_rec_no = int(cifp_line[21:22].strip())
         freq = cifp_line[22:27].strip()
         self.nav_class = cifp_line[27:32].strip()
