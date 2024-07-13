@@ -1,7 +1,7 @@
 from cifp_functions import clean_value, convert_dms, convert_mag_var
 
 
-class CIFPEnroutePoint:
+class CIFPWaypoint:
     def __init__(self) -> None:
         self.area = None
         self.sec_code = None
