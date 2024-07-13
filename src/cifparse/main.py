@@ -1,186 +1,295 @@
-import cifpairport as ca
-import cifpndb as cn
-import cifpairway as cr
-import cifpvhfdme as cv
-import cifpwaypoint as cw
-import cifpfunctions as cf
+from .cifp_functions import chunk
+from .cifp_airport import CIFPAirport
+from .cifp_heliport import CIFPHeliport
+from .cifp_ndb import CIFP_NDB
+from .cifp_airway import CIFPAirway
+from .cifp_vhf_dme import CIFP_VHF_DME
+from .cifp_waypoint import CIFPWaypoint
+from .cifp_controlled_airspace import CIFPControlledAirspace
+from .cifp_restrictive_airspace import CIFPRestrictiveAirspace
 
 import os
 
 
 class CIFP:
-    def __init__(self) -> None:
+    def __init__(self, path: str) -> None:
         self._exists = False
-        self._filePath = ""
-        self._airportLines = []
-        self._airportChunked = []
-        self._airports = []
-        self._waypointLines = []
-        self._waypointChunked = []
-        self._waypoints = []
-        self._heliportLines = []
-        self._heliportChunked = []
-        self._heliports = []
-        self._ndbLines = []
-        self._ndbChunked = []
-        self._ndbs = []
-        self._airwayLines = []
-        self._airwayChunked = []
-        self._airways = []
-        self._vhfdmeLines = []
-        self._vhfdmeChunked = []
-        self._vhfdmes = []
+        self._file_path = ""
+        self._airport_lines: list[str] = []
+        self._airport: list[CIFPAirport] = []
+        self._waypoint_lines: list[str] = []
+        self._waypoint: list[CIFPWaypoint] = []
+        self._heliport_lines: list[str] = []
+        self._heliport: list[CIFPHeliport] = []
+        self._ndb_lines: list[str] = []
+        self._ndb: list[CIFP_NDB] = []
+        self._airway_lines: list[str] = []
+        self._airway: list[CIFPAirway] = []
+        self._vhf_dme_lines: list[str] = []
+        self._vhf_dme: list[CIFP_VHF_DME] = []
+        self._controlled_lines: list[str] = []
+        self._controlled: list[CIFPControlledAirspace] = []
+        self._restrictive_lines: list[str] = []
+        self._restrictive: list[CIFPRestrictiveAirspace] = []
 
-    def setPath(self, path: str) -> None:
-        dir = os.path.dirname(__file__)
-        filePath = os.path.join(dir, path)
-        self._filePath = filePath
-        if os.path.exists(self._filePath):
-            print(f"CIFPARSER :: Found CIFP file at: {path}")
+        self._set_path(path)
+        if self._exists:
+            self._split_sections()
+
+    def _set_path(self, path: str) -> None:
+        self._file_path = path
+        if os.path.exists(self._file_path):
+            print(f"CIFP Parser :: Found CIFP file at: {path}")
             self._exists = True
         else:
             print(
-                f"CIFPARSER :: Unable to find CIFP file at: {path} :: Interpreted as {filePath}"
+                f"CIFP Parser :: Unable to find CIFP file at: {path} :: Interpreted as {path}"
             )
 
-    def _splitSections(self) -> None:
-        with open(self._filePath) as cifpFile:
+    def _split_sections(self) -> None:
+        with open(self._file_path) as cifpFile:
             for line in cifpFile:
-                sectionId = line[4:6]
-                if sectionId == "D ":
-                    self._vhfdmeLines.append(line)
-                if sectionId == "DB" or sectionId == "PN":
-                    self._ndbLines.append(line)
-                if sectionId == "EA":
-                    self._waypointLines.append(line)
-                if sectionId == "ER":
-                    self._airwayLines.append(line)
-                if sectionId == "H ":
-                    self._heliportLines.append(line)
-                if sectionId == "P ":
-                    self._airportLines.append(line)
-                if sectionId == "UC":
-                    pass
-                if sectionId == "UR":
-                    pass
+                section_id = line[4:6]
+                if section_id == "D ":
+                    self._vhf_dme_lines.append(line)
+                if section_id == "DB" or section_id == "PN":
+                    self._ndb_lines.append(line)
+                if section_id == "EA":
+                    self._waypoint_lines.append(line)
+                if section_id == "ER":
+                    self._airway_lines.append(line)
+                if section_id == "H ":
+                    self._heliport_lines.append(line)
+                if section_id == "P ":
+                    subsection_id = line[12:13]
+                    if subsection_id == "C":
+                        self._waypoint_lines.append(line)
+                    self._airport_lines.append(line)
+                if section_id == "UC":
+                    self._controlled_lines.append(line)
+                if section_id == "UR":
+                    self._restrictive_lines.append(line)
 
-    def _airportToObject(self) -> None:
-        for airportChunk in self._airportChunked:
-            airport = ca.CIFPAirport(airportChunk)
-            self._airports.append(airport.toDict())
+    def _airport_to_object(self) -> None:
+        airport_chunked = chunk(self._airport_lines, 6, 10)
+        del self._airport_lines
+        for airport_chunk in airport_chunked:
+            airport = CIFPAirport()
+            airport.from_lines(airport_chunk)
+            self._airport.append(airport)
 
-    def _ndbToObject(self) -> None:
-        for ndbChunk in self._ndbChunked:
-            ndb = cn.CIFPNDB(ndbChunk)
-            self._ndbs.append(ndb.toDict())
+    def _heliport_to_object(self) -> None:
+        heliport_chunked = chunk(self._heliport_lines, 6, 10)
+        del self._heliport_lines
+        for heliport_chunk in heliport_chunked:
+            heliport = CIFPHeliport()
+            heliport.from_lines(heliport_chunk)
+            self._heliport.append(heliport)
 
-    def _airwayToObject(self) -> None:
-        for airwayChunk in self._airwayChunked:
-            airway = cr.CIFPAirway(airwayChunk)
-            self._airways.append(airway.toDict())
+    def _ndb_to_object(self) -> None:
+        ndb_chunked = chunk(self._ndb_lines, 6, 22)
+        del self._ndb_lines
+        for ndb_chunk in ndb_chunked:
+            ndb = CIFP_NDB()
+            ndb.from_lines(ndb_chunk)
+            self._ndb.append(ndb)
 
-    def _vhfdmeToObject(self) -> None:
-        for vhfdmeChunk in self._vhfdmeChunked:
-            vhfdme = cv.CIFPVHFDME(vhfdmeChunk)
-            self._vhfdmes.append(vhfdme.toDict())
+    def _airway_to_object(self) -> None:
+        airway_chunked = chunk(self._airway_lines, 6, 19)
+        del self._airway_lines
+        for airway_chunk in airway_chunked:
+            airway = CIFPAirway()
+            airway.from_lines(airway_chunk)
+            self._airway.append(airway)
 
-    def _waypointToObject(self) -> None:
-        for waypointChunk in self._waypointChunked:
-            waypoint = cw.CIFPWaypoint(waypointChunk)
-            self._waypoints.append(waypoint.toDict())
+    def _vhf_dme_to_object(self) -> None:
+        vhf_dme_chunked = chunk(self._vhf_dme_lines, 6, 22)
+        del self._vhf_dme_lines
+        for vhf_dme_chunk in vhf_dme_chunked:
+            vhf_dme = CIFP_VHF_DME()
+            vhf_dme.from_lines(vhf_dme_chunk)
+            self._vhf_dme.append(vhf_dme)
+
+    def _waypoint_to_object(self) -> None:
+        waypoint_chunked = chunk(self._waypoint_lines, 6, 22)
+        del self._waypoint_lines
+        for waypoint_chunk in waypoint_chunked:
+            waypoint = CIFPWaypoint()
+            waypoint.from_lines(waypoint_chunk)
+            self._waypoint.append(waypoint)
+
+    def _controlled_to_object(self) -> None:
+        controlled_chunked = chunk(self._controlled_lines, 9, 13)
+        del self._controlled_lines
+        for controlled_chunk in controlled_chunked:
+            controlled = CIFPControlledAirspace()
+            controlled.from_lines(controlled_chunk)
+            self._controlled.append(controlled)
+
+    def _restrictive_to_object(self) -> None:
+        restrictive_chunked = chunk(self._restrictive_lines, 6, 19)
+        del self._restrictive_lines
+        for restrictive_chunk in restrictive_chunked:
+            restrictive = CIFPRestrictiveAirspace()
+            restrictive.from_lines(restrictive_chunk)
+            self._restrictive.append(restrictive)
+
+    def parse_airports(self) -> None:
+        if self._exists:
+            print("Processing Airports")
+            self._airport_to_object()
+
+    def parse_heliports(self) -> None:
+        if self._exists:
+            print("Processing Heliports")
+            self._heliport_to_object()
+
+    def parse_ndbs(self) -> None:
+        if self._exists:
+            print("Processing NDBs")
+            self._ndb_to_object()
+
+    def parse_airways(self) -> None:
+        if self._exists:
+            print("Processing Airways")
+            self._airway_to_object()
+
+    def parse_vhf_dmes(self) -> None:
+        if self._exists:
+            print("Processing VHF/DMEs")
+            self._vhf_dme_to_object()
+
+    def parse_waypoints(self) -> None:
+        if self._exists:
+            print("Processing Waypoints")
+            self._waypoint_to_object()
+
+    def parse_controlled(self) -> None:
+        if self._exists:
+            print("Processing Controlled Airspace")
+            self._controlled_to_object()
+
+    def parse_restrictive(self) -> None:
+        if self._exists:
+            print("Processing Restrictive Airspace")
+            self._restrictive_to_object()
 
     def parse(self) -> None:
-        if self._exists:
-            functions = cf.CIFPFunctions()
-            self._splitSections()
-            # Process Airports
-            self._airportChunked = functions.chunk(self._airportLines, 6, 10)
-            self._airportToObject()
-            del self._airportLines
-            del self._airportChunked
-            # Process NDBs
-            self._ndbChunked = functions.chunk(self._ndbLines, 6, 22)
-            self._ndbToObject()
-            del self._ndbLines
-            del self._ndbChunked
-            # Process Routes
-            self._airwayChunked = functions.chunk(self._airwayLines, 6, 19)
-            self._airwayToObject()
-            del self._airwayLines
-            del self._airwayChunked
-            # Process VHFDME
-            self._vhfdmeChunked = functions.chunk(self._vhfdmeLines, 6, 22)
-            self._vhfdmeToObject()
-            del self._vhfdmeLines
-            del self._vhfdmeChunked
-            # Process Waypoint
-            self._waypointChunked = functions.chunk(self._waypointLines, 6, 22)
-            self._waypointToObject()
-            del self._waypointLines
-            del self._waypointChunked
+        self.parse_airports()
+        self.parse_heliports()
+        self.parse_ndbs()
+        self.parse_airways()
+        self.parse_vhf_dmes()
+        self.parse_waypoints()
+        self.parse_controlled()
+        self.parse_restrictive()
 
-    def getAirports(self) -> list:
-        return self._airports
+    def get_airports(self) -> list:
+        print(f"Fetching all airports.")
+        return self._airport
 
-    def findAirport(self, airportId: str) -> dict:
-        result = {}
-        for airport in self._airports:
-            if airport["id"] == airportId:
+    def find_airport(self, airport_id: str) -> CIFPAirport | None:
+        print(f'Finding airport with ID "{airport_id}"')
+        result = None
+        for airport in self._airport:
+            if airport.airport_id == airport_id:
                 result = airport
         return result
 
-    def getAirways(self) -> list:
-        return self._airways
+    def get_heliports(self) -> list:
+        print(f"Fetching all heliports.")
+        return self._heliport
 
-    def findAirway(self, airwayId: str) -> dict:
-        result = {}
-        for airway in self._airways:
-            if airway["id"] == airwayId:
+    def find_heliport(self, heliport_id: str) -> CIFPHeliport | None:
+        print(f'Finding heliport with ID "{heliport_id}"')
+        result = None
+        for heliport in self._heliport:
+            print(heliport.heliport_id)
+            if heliport.heliport_id == heliport_id:
+                result = heliport
+        return result
+
+    def get_airways(self) -> list:
+        print(f"Fetching all airways.")
+        return self._airway
+
+    def find_airway(self, airway_id: str) -> CIFPAirway | None:
+        print(f'Finding airway with ID "{airway_id}"')
+        result = None
+        for airway in self._airway:
+            if airway.id == airway_id:
                 result = airway
         return result
 
-    def getNDBs(self) -> list:
-        return self._ndbs
+    def get_NDBs(self) -> list:
+        print(f"Fetching all NDBs.")
+        return self._ndb
 
-    def findNDB(self, ndbId: str) -> dict:
-        result = {}
-        for ndb in self._ndbs:
-            if ndb["id"] == ndbId:
+    def find_NDB(self, ndb_id: str) -> CIFP_NDB | None:
+        print(f'Finding NDB with ID "{ndb_id}"')
+        result = None
+        for ndb in self._ndb:
+            if ndb.id == ndb_id:
                 result = ndb
         return result
 
-    def getVHFDMEs(self) -> list:
-        return self._vhfdmes
+    def get_VHF_DMEs(self) -> list:
+        print(f"Fetching all VHF/DMEs.")
+        return self._vhf_dme
 
-    def findVHFDME(self, vhfdmeId: str) -> dict:
-        result = {}
-        for vhfdme in self._vhfdmes:
-            if vhfdme["id"] == vhfdmeId:
-                result = vhfdme
+    def find_VHF_DME(self, vhf_dme_id: str) -> CIFP_VHF_DME | None:
+        print(f'Finding VHF/DME navaid with ID "{vhf_dme_id}"')
+        result = None
+        for vhf_dme in self._vhf_dme:
+            if vhf_dme.id == vhf_dme_id:
+                result = vhf_dme
         return result
 
-    def getWaypoints(self) -> list:
-        return self._waypoints
+    def get_waypoints(self) -> list:
+        print(f"Fetching all waypoints.")
+        return self._waypoint
 
-    def findWaypoint(self, waypointId: str) -> dict:
-        result = {}
-        for waypoint in self._waypoints:
-            if waypoint["id"] == waypointId:
+    def find_waypoint(self, waypoint_id: str) -> CIFPWaypoint | None:
+        print(f'Finding waypoint with ID "{waypoint_id}"')
+        result = None
+        for waypoint in self._waypoint:
+            if waypoint.id == waypoint_id:
                 result = waypoint
         return result
 
+    def get_controlled(self) -> list:
+        print(f"Fetching all controlled airspace.")
+        return self._controlled
 
-import json
+    def find_controlled(self, center_id: str) -> CIFPControlledAirspace | None:
+        print(f'Finding controlled airspace with center point "{center_id}"')
+        result = None
+        for controlled in self._controlled:
+            if controlled.center_id == center_id:
+                result = controlled
+        return result
 
-c = CIFP()
-c.setPath("../../../../Downloads/FAACIFP18")
-c.parse()
-# ndb = c.findNDB("GTN")
-# vor = c.findVHFDME("AML")
-# fix = c.findWaypoint("RUANE")
-# airway = c.findAirway("J146")
-# airport = c.findAirport("KIAD")
+    def get_restrictive(self) -> list:
+        print(f"Fetching all restrictive airspace.")
+        return self._restrictive
 
-airports = c.getAirports()
-with open("temp.json", "w") as jsonFile:
-    json.dump(airports, jsonFile, indent=2)
+    def find_restrictive_match(self, restrictive_name: str) -> list:
+        print(
+            f'Finding all restrictive airspace with names containing "{restrictive_name}".'
+        )
+        result = []
+        for restrictive in self._restrictive:
+            if (
+                restrictive.restrictive_name
+                and restrictive_name in restrictive.restrictive_name
+            ):
+                result.append(restrictive.restrictive_name)
+        return result
+
+    def find_restrictive(self, restrictive_name: str) -> CIFPRestrictiveAirspace | None:
+        print(f'Finding restrictive airspace with name "{restrictive_name}".')
+        result = None
+        for restrictive in self._restrictive:
+            if restrictive.restrictive_name == restrictive_name:
+                result = restrictive
+        return result
