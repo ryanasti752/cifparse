@@ -221,11 +221,11 @@ class CIFP:
                 result = airway
         return result
 
-    def get_NDBs(self) -> list:
+    def get_ndbs(self) -> list:
         print(f"Fetching all NDBs.")
         return self._ndb
 
-    def find_NDB(self, ndb_id: str) -> CIFP_NDB | None:
+    def find_ndb(self, ndb_id: str) -> CIFP_NDB | None:
         print(f'Finding NDB with ID "{ndb_id}"')
         result = None
         for ndb in self._ndb:
@@ -233,11 +233,11 @@ class CIFP:
                 result = ndb
         return result
 
-    def get_VHF_DMEs(self) -> list:
+    def get_vhf_dmes(self) -> list:
         print(f"Fetching all VHF/DMEs.")
         return self._vhf_dme
 
-    def find_VHF_DME(self, vhf_dme_id: str) -> CIFP_VHF_DME | None:
+    def find_vhf_dme(self, vhf_dme_id: str) -> CIFP_VHF_DME | None:
         print(f'Finding VHF/DME navaid with ID "{vhf_dme_id}"')
         result = None
         for vhf_dme in self._vhf_dme:
