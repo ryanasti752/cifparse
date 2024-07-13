@@ -8,7 +8,7 @@ class CIFPProcedure:
     def __init__(self) -> None:
         self.area = None
         self.sec_code = None
-        self.id = None
+        self.procedure_id = None
         self.segments: list[CIFPProcedureSegment] = []
 
     def from_lines(self, cifp_lines: list) -> None:
@@ -18,7 +18,7 @@ class CIFPProcedure:
         cifp_line = str(cifp_lines[0])
         self.area = cifp_line[1:4].strip()
         self.sec_code = cifp_line[4:5].strip()
-        self.id = cifp_line[13:19].strip()
+        self.procedure_id = cifp_line[13:19].strip()
 
     def _segment_to_object(self, chunked_list: list) -> None:
         for segment_chunk in chunked_list:
@@ -34,6 +34,6 @@ class CIFPProcedure:
         return {
             "area": clean_value(self.area),
             "sec_code": clean_value(self.sec_code),
-            "id": clean_value(self.id),
+            "procedure_id": clean_value(self.procedure_id),
             "segments": segments,
         }
