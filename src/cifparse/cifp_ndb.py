@@ -70,3 +70,25 @@ class CIFP_NDB:
         # PAD 22
         self.application = cifp_line[22:23].strip()
         self.notes = cifp_line[23:91].strip()
+
+    def to_dict(self) -> dict:
+        return {
+            "area": self.area,
+            "sec_code": self.sec_code,
+            "sub_code": self.sub_code,
+            "airport_id": self.airport_id,
+            "airport_region": self.airport_region,
+            "ndb_id": self.ndb_id,
+            "ndb_region": self.ndb_region,
+            "frequency": self.frequency,
+            "nav_class": self.nav_class,
+            "lat": self.lat,
+            "lon": self.lon,
+            "mag_var": self.mag_var,
+            "datum_code": self.datum_code,
+            "name": self.name,
+            "application": self.application,
+            "notes": self.notes,
+            "record_number": self.record_number,
+            "cycle_data": self.cycle_data,
+        }
