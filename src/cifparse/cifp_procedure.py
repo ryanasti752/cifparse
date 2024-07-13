@@ -1,31 +1,37 @@
-import cifpfunctions as cf
-import cifpproceduresegment as cs
+from cifp_functions import chunk, clean_value
+from cifp_procedure_segment import CIFPProcedureSegment
 
 
 class CIFPProcedure:
-    def __init__(self, cifpLines: list) -> None:
+    def __init__(self) -> None:
         self.area = None
-        self.secCode = None
+        self.sec_code = None
         self.id = None
-        self.segmentChunked = []
-        self.segments = []
+        self.segments: list[CIFPProcedureSegment] = []
 
-        functions = cf.CIFPFunctions()
-        self.segmentChunked = functions.chunk(cifpLines, 13, 20)
-        self._segmentToObject()
-        del self.segmentChunked
+    def from_lines(self, cifp_lines: list) -> None:
+        segment_chunked = chunk(cifp_lines, 13, 20)
+        self._segment_to_object(segment_chunked)
 
-        cifpLine = str(cifpLines[0])
-        self.area = cifpLine[1:4].strip()
-        self.secCode = cifpLine[4:5].strip()
-        self.id = cifpLine[13:19].strip()
+        cifp_line = str(cifp_lines[0])
+        self.area = cifp_line[1:4].strip()
+        self.sec_code = cifp_line[4:5].strip()
+        self.id = cifp_line[13:19].strip()
 
-    def _segmentToObject(self) -> None:
-        for segmentChunk in self.segmentChunked:
-            segment = cs.CIFPProcedureSegment(segmentChunk)
-            self.segments.append(segment.toDict())
+    def _segment_to_object(self, chunked_list: list) -> None:
+        for segment_chunk in chunked_list:
+            segment = CIFPProcedureSegment()
+            segment.from_lines(segment_chunk)
+            self.segments.append(segment)
 
-    def toDict(self) -> dict:
-        functions = cf.CIFPFunctions()
-        functions.cleanDict(self.__dict__)
-        return self.__dict__
+    def to_dict(self) -> dict:
+        segments = []
+        for item in self.segments:
+            segments.append(item.to_dict())
+
+        return {
+            "area": clean_value(self.area),
+            "sec_code": clean_value(self.sec_code),
+            "id": clean_value(self.id),
+            "segments": segments,
+        }
