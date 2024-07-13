@@ -1,5 +1,5 @@
-from cifp_airway_point import CIFPAirwayPoint
-from cifp_functions import clean_value
+from .cifp_airway_point import CIFPAirwayPoint
+from .cifp_functions import clean_value
 
 
 class CIFPAirway:

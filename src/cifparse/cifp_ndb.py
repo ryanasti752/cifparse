@@ -1,4 +1,4 @@
-from cifp_functions import convert_dms, convert_mag_var
+from .cifp_functions import convert_dms, convert_mag_var
 
 
 class CIFP_NDB:

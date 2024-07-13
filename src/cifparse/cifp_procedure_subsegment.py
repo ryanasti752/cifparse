@@ -1,5 +1,5 @@
-from cifp_functions import clean_value
-from cifp_procedure_point import CIFPProcedurePoint
+from .cifp_functions import clean_value
+from .cifp_procedure_point import CIFPProcedurePoint
 
 # FOR TRANSITIONS OF PD/PE/PF AND HD/HE/HF
 

@@ -1,9 +1,8 @@
-from cifp_functions import chunk, convert_dms, convert_mag_var, clean_value
-from cifp_loc_gs import CIFP_LOC_GS
-from cifp_procedure import CIFPProcedure
-from cifp_runway import CIFPRunway
-from cifp_vhf_dme import CIFP_VHF_DME
-from cifp_waypoint import CIFPWaypoint
+from .cifp_functions import chunk, convert_dms, convert_mag_var, clean_value, yn_to_bool
+from .cifp_loc_gs import CIFP_LOC_GS
+from .cifp_procedure import CIFPProcedure
+from .cifp_runway import CIFPRunway
+from .cifp_waypoint import CIFPWaypoint
 
 
 class CIFPAirport:

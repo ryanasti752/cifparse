@@ -1,6 +1,6 @@
-from cifp_functions import chunk, clean_value
-from cifp_procedure_point import CIFPProcedurePoint
-from cifp_procedure_subsegment import CIFPProcedureSubsegment
+from .cifp_functions import chunk, clean_value
+from .cifp_procedure_point import CIFPProcedurePoint
+from .cifp_procedure_subsegment import CIFPProcedureSubsegment
 
 # FOR CORE AND COLLECTION OF TRANSITIONS OF PD/PE/PF AND HD/HE/HF
 

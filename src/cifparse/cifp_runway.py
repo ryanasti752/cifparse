@@ -1,4 +1,4 @@
-from cifp_functions import clean_value, convert_dms
+from .cifp_functions import clean_value, convert_dms
 
 
 class CIFPRunway:

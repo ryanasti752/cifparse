@@ -1,5 +1,5 @@
-from cifp_functions import chunk, clean_value
-from cifp_procedure_segment import CIFPProcedureSegment
+from .cifp_functions import chunk, clean_value
+from .cifp_procedure_segment import CIFPProcedureSegment
 
 # FOR ENTIRE COLLECTION OF PD/PE/PF AND HD/HE/HF
 

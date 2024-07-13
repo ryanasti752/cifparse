@@ -1,4 +1,4 @@
-from coordinate import Coordinate
+from .coordinate import Coordinate
 
 
 def convert_dms(cifp_dms_substring: str) -> Coordinate:

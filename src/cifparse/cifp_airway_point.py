@@ -1,4 +1,4 @@
-from cifp_functions import clean_value
+from .cifp_functions import clean_value
 
 
 class CIFPAirwayPoint:

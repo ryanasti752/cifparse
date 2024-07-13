@@ -1,4 +1,4 @@
-from cifp_functions import clean_value
+from .cifp_functions import clean_value
 
 # FOR PD/PE/PF AND HD/HE/HF
 

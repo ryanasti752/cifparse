@@ -1,4 +1,4 @@
-from cifp_functions import clean_value, convert_dms, convert_mag_var
+from .cifp_functions import clean_value, convert_dms, convert_mag_var
 
 
 class CIFP_LOC_GS:

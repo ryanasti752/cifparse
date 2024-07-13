@@ -1,5 +1,5 @@
-from cifp_functions import chunk, clean_value
-from cifp_controlled_airspace_segment import CIFPControlledAirspaceSegment
+from .cifp_functions import chunk, clean_value
+from .cifp_controlled_airspace_segment import CIFPControlledAirspaceSegment
 
 
 class CIFPControlledAirspace:
