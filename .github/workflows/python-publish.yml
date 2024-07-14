@@ -32,6 +32,11 @@ jobs:
         pip install build
     - name: Build package
       run: python -m build
+    - name: Print version number
+      run: |
+        version=$(grep "version" setup.cfg | cut -d' ' -f3)
+        echo "Version: $version"
+
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
       with:
