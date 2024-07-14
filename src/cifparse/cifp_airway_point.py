@@ -1,4 +1,4 @@
-from .cifp_functions import clean_value
+from .cifp_functions import clean_value, translate_rnp
 
 
 class CIFPAirwayPoint:
@@ -75,6 +75,9 @@ class CIFPAirwayPoint:
         # PAD 21
         self.record_number = int(cifp_line[123:128].strip())
         self.cycle_data = cifp_line[128:132].strip()
+
+        if self.rnp != "":
+            self.rnp = translate_rnp(self.rnp)
 
         if out_crs != "":
             self.out_mag_crs = int(out_crs) / 10

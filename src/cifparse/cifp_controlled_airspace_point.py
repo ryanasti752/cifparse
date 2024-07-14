@@ -1,4 +1,4 @@
-from .cifp_functions import clean_value, convert_dms
+from .cifp_functions import clean_value, convert_dms, translate_rnp
 
 
 class CIFPControlledAirspacePoint:
@@ -80,6 +80,9 @@ class CIFPControlledAirspacePoint:
 
         if arc_bearing != "":
             self.arc_bearing = int(arc_bearing) / 10
+
+        if self.rnp != "":
+            self.rnp = translate_rnp(self.rnp)
 
     def to_dict(self) -> dict:
         return {

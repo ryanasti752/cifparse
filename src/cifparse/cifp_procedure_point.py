@@ -1,4 +1,4 @@
-from .cifp_functions import clean_value
+from .cifp_functions import clean_value, translate_rnp
 
 # FOR PD/PE/PF AND HD/HE/HF
 
@@ -106,6 +106,9 @@ class CIFPProcedurePoint:
         # PAD 3
         self.record_number = int(cifp_line[123:128].strip())
         self.cycle_data = cifp_line[128:132].strip()
+
+        if self.rnp != "":
+            self.rnp = translate_rnp(self.rnp)
 
         if arc_rad != "":
             self.arc_radius = int(arc_rad) / 1000
