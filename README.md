@@ -87,6 +87,10 @@ with open("output.json", "w") as json_file:
     json.dump(airport.to_dict(), json_file, indent=2)
 ```
 
+## Example File
+
+An example file is provided in the [Examples](./examples/) directory. It demonstrates parsing all of the CIFP data, finding an airport within the data, and then looping through the SID and STAR data to create a geoJSON file for each.
+
 ## CIFP Objects
 
 A breakdown of the different objects can be found in the [Docs](./docs/) directory.
