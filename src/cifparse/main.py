@@ -217,7 +217,7 @@ class CIFP:
         print(f'Finding airway with ID "{airway_id}"')
         result = None
         for airway in self._airway:
-            if airway.id == airway_id:
+            if airway.airway_id == airway_id:
                 result = airway
         return result
 
