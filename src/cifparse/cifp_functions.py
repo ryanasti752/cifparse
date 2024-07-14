@@ -24,6 +24,15 @@ def convert_mag_var(cifp_mag_var_substring: str) -> float:
     return mag_var_value
 
 
+def translate_rnp(rnp_string: str) -> float:
+    leading_digit_string = rnp_string[0:1]
+    if leading_digit_string == "0":
+        value = int(rnp_string[1:2])
+        exponent = int(rnp_string[2:3])
+        return value * (10**exponent)
+    return int(rnp_string) / 10
+
+
 def chunk(
     line_array: list,
     id_start: int,
