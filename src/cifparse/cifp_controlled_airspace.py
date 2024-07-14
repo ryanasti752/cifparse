@@ -13,7 +13,7 @@ class CIFPControlledAirspace:
         self.center_sec_code = None
         self.center_sub_code = None
         self.airspace_class = None
-        self.application_type = None
+        self.application = None
         self.time_code = None
         self.notam = None
         self.time_ind = None
@@ -60,7 +60,7 @@ class CIFPControlledAirspace:
     def _cont1(self, cifp_line: str) -> None:
         # PAD 25
         # cont_rec_no = int(cifp_line[24:25].strip())
-        self.application_type = cifp_line[25:26].strip()
+        self.application = cifp_line[25:26].strip()
         self.time_code = cifp_line[26:27].strip()
         self.notam = cifp_line[27:28].strip()
         self.time_ind = cifp_line[28:29].strip()
@@ -90,7 +90,7 @@ class CIFPControlledAirspace:
             "center_sec_code": clean_value(self.center_sec_code),
             "center_sub_code": clean_value(self.center_sub_code),
             "airspace_class": clean_value(self.airspace_class),
-            "application_type": clean_value(self.application_type),
+            "application": clean_value(self.application),
             "time_ind": clean_value(self.time_ind),
             "op_time_1": clean_value(self.op_time_1),
             "op_time_2": clean_value(self.op_time_2),

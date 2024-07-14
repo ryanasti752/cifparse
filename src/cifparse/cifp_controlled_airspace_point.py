@@ -8,7 +8,7 @@ class CIFPControlledAirspacePoint:
         self.sub_code = None
         self.region = None
         self.airspace_type = None
-        self.center_point = None
+        self.center_id = None
         self.center_sec_code = None
         self.center_sub_code = None
         self.airspace_class = None
@@ -39,7 +39,7 @@ class CIFPControlledAirspacePoint:
         self.sub_code = cifp_line[5:6].strip()
         self.region = cifp_line[6:8].strip()
         self.airspace_type = cifp_line[8:9].strip()
-        self.center_point = cifp_line[9:14].strip()
+        self.center_id = cifp_line[9:14].strip()
         self.center_sec_code = cifp_line[14:15].strip()
         self.center_sub_code = cifp_line[15:16].strip()
         self.airspace_class = cifp_line[16:17].strip()
@@ -91,7 +91,7 @@ class CIFPControlledAirspacePoint:
             "sub_code": clean_value(self.sub_code),
             "region": clean_value(self.region),
             "airspace_type": clean_value(self.airspace_type),
-            "center_point": clean_value(self.center_point),
+            "center_id": clean_value(self.center_id),
             "center_sec_code": clean_value(self.center_sec_code),
             "center_sub_code": clean_value(self.center_sub_code),
             "airspace_class": clean_value(self.airspace_class),
