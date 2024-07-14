@@ -8,11 +8,10 @@ class CIFPRestrictiveAirspace:
         self.sec_code = None
         self.sub_code = None
         self.region = None
-        self.restrictive_id = None
         self.restrictive_type = None
         self.restrictive_designation = None
         self.restrictive_name = None
-        self.application_type = None
+        self.application = None
         self.time_ind = None
         self.op_time_1 = None
         self.op_time_2 = None
@@ -55,17 +54,10 @@ class CIFPRestrictiveAirspace:
             self.restrictive_designation = cifp_line[9:19].strip()
             self.restrictive_name = cifp_line[93:123].strip()
 
-            if self.restrictive_type != "M":
-                self.restrictive_id = (
-                    f"{self.restrictive_type}{self.restrictive_designation}"
-                )
-            else:
-                self.restrictive_id = self.restrictive_designation
-
     def _cont2(self, cifp_line: str) -> None:
         # PAD 25
         # cont_rec_no = int(cifp_line[24:25].strip())
-        self.application_type = cifp_line[25:26].strip()
+        self.application = cifp_line[25:26].strip()
         self.time_code = cifp_line[26:27].strip()
         self.notam = cifp_line[27:28].strip()
         self.time_ind = cifp_line[28:29].strip()
@@ -93,7 +85,7 @@ class CIFPRestrictiveAirspace:
             "restrictive_type": clean_value(self.restrictive_type),
             "restrictive_designation": clean_value(self.restrictive_designation),
             "restrictive_name": clean_value(self.restrictive_name),
-            "application_type": clean_value(self.application_type),
+            "application": clean_value(self.application),
             "time_ind": clean_value(self.time_ind),
             "op_time_1": clean_value(self.op_time_1),
             "op_time_2": clean_value(self.op_time_2),
