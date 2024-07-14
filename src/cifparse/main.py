@@ -229,7 +229,7 @@ class CIFP:
         print(f'Finding NDB with ID "{ndb_id}"')
         result = None
         for ndb in self._ndb:
-            if ndb.id == ndb_id:
+            if ndb.ndb_id == ndb_id:
                 result = ndb
         return result
 
@@ -253,7 +253,7 @@ class CIFP:
         print(f'Finding waypoint with ID "{waypoint_id}"')
         result = None
         for waypoint in self._waypoint:
-            if waypoint.id == waypoint_id:
+            if waypoint.waypoint_id == waypoint_id:
                 result = waypoint
         return result
 
