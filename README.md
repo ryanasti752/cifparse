@@ -86,3 +86,7 @@ airport = c.find_airport("KIAD")
 with open("output.json", "w") as json_file:
     json.dump(airport.to_dict(), json_file, indent=2)
 ```
+
+## CIFP Objects
+
+A breakdown of the different objects can be found in the [Docs](./docs/) directory.
