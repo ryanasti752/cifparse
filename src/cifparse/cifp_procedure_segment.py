@@ -1,5 +1,4 @@
 from .cifp_functions import chunk, clean_value
-from .cifp_procedure_point import CIFPProcedurePoint
 from .cifp_procedure_subsegment import CIFPProcedureSubsegment
 
 # FOR COLLECTION OF SUBSEGMENTS OF PD/PE/PF AND HD/HE/HF
@@ -9,7 +8,6 @@ class CIFPProcedureSegment:
     def __init__(self) -> None:
         self.type = None
         self.subsegments: list[CIFPProcedureSubsegment] = []
-        self.points: list[CIFPProcedurePoint] = []
 
     def from_lines(self, cifp_lines: list) -> None:
         initial = str(cifp_lines[0])
@@ -114,21 +112,11 @@ class CIFPProcedureSegment:
         return result
 
     def to_dict(self) -> dict:
-        if len(self.subsegments) > 0:
-            subsegments = []
-            for item in self.subsegments:
-                subsegments.append(item.to_dict())
+        subsegments = []
+        for item in self.subsegments:
+            subsegments.append(item.to_dict())
 
-            return {"type": clean_value(self.type), "subsegments": subsegments}
-
-        points = []
-        for item in self.points:
-            points.append(item.to_dict())
-
-        return {
-            "type": self.type,
-            "points": points,
-        }
+        return {"type": clean_value(self.type), "subsegments": subsegments}
 
     # No longer used, but kept just in case.
     def _determine_core(self, sub_code: str, route_type: str) -> bool:
