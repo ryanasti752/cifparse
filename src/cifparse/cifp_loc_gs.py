@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, convert_dms, convert_mag_var
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "loc_gs"
+
 
 class CIFP_LOC_GS:
     def __init__(self) -> None:
@@ -117,6 +121,119 @@ class CIFP_LOC_GS:
         # PAD 22
         self.application = cifp_line[22:23].strip()
         self.notes = cifp_line[23:92].strip()
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = "DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `airport_id`,
+                `airport_region`,
+                `sub_code`,
+                `loc_id`,
+                `cat`,
+                `frequency`,
+                `runway_id`,
+                `loc_lat`,
+                `loc_lon`,
+                `loc_bearing`,
+                `gs_lat`,
+                `gs_lon`,
+                `loc_dist`,
+                `plus_minus`,
+                `gs_thr_dist`,
+                `loc_width`,
+                `gs_angle`,
+                `mag_var`,
+                `tch`,
+                `gs_elevation`,
+                `support_fac`,
+                `support_region`,
+                `support_sec_code`,
+                `support_sub_code`,
+                `application`,
+                `notes`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `airport_id`,
+                `airport_region`,
+                `sub_code`,
+                `loc_id`,
+                `cat`,
+                `frequency`,
+                `runway_id`,
+                `loc_lat`,
+                `loc_lon`,
+                `loc_bearing`,
+                `gs_lat`,
+                `gs_lon`,
+                `loc_dist`,
+                `plus_minus`,
+                `gs_thr_dist`,
+                `loc_width`,
+                `gs_angle`,
+                `mag_var`,
+                `tch`,
+                `gs_elevation`,
+                `support_fac`,
+                `support_region`,
+                `support_sec_code`,
+                `support_sub_code`,
+                `application`,
+                `notes`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                self.area,
+                self.sec_code,
+                self.airport_id,
+                self.airport_region,
+                self.sub_code,
+                self.loc_id,
+                self.cat,
+                self.frequency,
+                self.runway_id,
+                self.loc_lat,
+                self.loc_lon,
+                self.loc_bearing,
+                self.gs_lat,
+                self.gs_lon,
+                self.loc_dist,
+                self.plus_minus,
+                self.gs_thr_dist,
+                self.loc_width,
+                self.gs_angle,
+                self.mag_var,
+                self.tch,
+                self.gs_elevation,
+                self.support_fac,
+                self.support_region,
+                self.support_sec_code,
+                self.support_sub_code,
+                self.application,
+                self.notes,
+                self.record_number,
+                self.cycle_data,
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

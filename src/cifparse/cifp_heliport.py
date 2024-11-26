@@ -2,6 +2,10 @@ from .cifp_functions import chunk, convert_dms, convert_mag_var, clean_value, yn
 from .cifp_procedure import CIFPProcedure
 from .cifp_waypoint import CIFPWaypoint
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "heliports"
+
 
 class CIFPHeliport:
     def __init__(self) -> None:
@@ -156,6 +160,113 @@ class CIFPHeliport:
         point = CIFPWaypoint()
         point.from_lines([cifp_line])
         self.points.append(point)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = "DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `heliport_id`,
+                `region`,
+                `sub_code`,
+                `iata`,
+                `pad_id`,
+                `cont_rec_no`,
+                `limit_alt`,
+                `datum_code`,
+                `is_ifr`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `elevation`,
+                `limit`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `transition_alt`,
+                `transition_level`,
+                `usage`,
+                `time_zone`,
+                `daylight_ind`,
+                `pad_dimensions`,
+                `mag_true`,
+                `heliport_name`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `heliport_id`,
+                `region`,
+                `sub_code`,
+                `iata`,
+                `pad_id`,
+                `cont_rec_no`,
+                `limit_alt`,
+                `datum_code`,
+                `is_ifr`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `elevation`,
+                `limit`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `transition_alt`,
+                `transition_level`,
+                `usage`,
+                `time_zone`,
+                `daylight_ind`,
+                `pad_dimensions`,
+                `mag_true`,
+                `heliport_name`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.heliport_id),
+                clean_value(self.region),
+                clean_value(self.sub_code),
+                clean_value(self.iata),
+                clean_value(self.pad_id),
+                clean_value(self.cont_rec_no),
+                clean_value(self.limit_alt),
+                clean_value(self.datum_code),
+                clean_value(self.is_ifr),
+                clean_value(self.lat),
+                clean_value(self.lon),
+                clean_value(self.mag_var),
+                clean_value(self.elevation),
+                clean_value(self.limit),
+                clean_value(self.rec_vhf),
+                clean_value(self.rec_vhf_region),
+                clean_value(self.transition_alt),
+                clean_value(self.transition_level),
+                clean_value(self.usage),
+                clean_value(self.time_zone),
+                clean_value(self.daylight_ind),
+                clean_value(self.pad_dimensions),
+                clean_value(self.mag_true),
+                clean_value(self.heliport_name),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         points = []

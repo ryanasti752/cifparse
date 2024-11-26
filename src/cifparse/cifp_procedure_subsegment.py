@@ -1,6 +1,8 @@
 from .cifp_functions import clean_value
 from .cifp_procedure_point import CIFPProcedurePoint
 
+from sqlite3 import Cursor
+
 # FOR SUBSEGMENTS OF PD/PE/PF AND HD/HE/HF
 
 
@@ -23,6 +25,13 @@ class CIFPProcedureSubsegment:
         point = CIFPProcedurePoint()
         point.from_line(cifp_line)
         self.points.append(point)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFPProcedurePoint.create_db_table(db_cursor)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.points:
+            item.to_db(db_cursor)
 
     def to_dict(self) -> dict:
         points = []

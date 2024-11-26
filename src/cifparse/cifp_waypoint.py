@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, convert_dms, convert_mag_var
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "waypoints"
+
 
 class CIFPWaypoint:
     def __init__(self) -> None:
@@ -75,6 +79,89 @@ class CIFPWaypoint:
         # PAD 22
         self.application = cifp_line[22:23].strip()
         self.notes = cifp_line[23:91].strip()
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = "DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `environment`,
+                `environment_region`,
+                `waypoint_id`,
+                `region`,
+                `type`,
+                `usage`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `elevation`,
+                `datum_code`,
+                `name`,
+                `name_description`,
+                `application`,
+                `notes`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `environment`,
+                `environment_region`,
+                `waypoint_id`,
+                `region`,
+                `type`,
+                `usage`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `elevation`,
+                `datum_code`,
+                `name`,
+                `name_description`,
+                `application`,
+                `notes`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                self.area,
+                self.sec_code,
+                self.sub_code,
+                self.environment,
+                self.environment_region,
+                self.waypoint_id,
+                self.region,
+                self.type,
+                self.usage,
+                self.lat,
+                self.lon,
+                self.mag_var,
+                self.elevation,
+                self.datum_code,
+                self.name,
+                self.name_description,
+                self.application,
+                self.notes,
+                self.record_number,
+                self.cycle_data,
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

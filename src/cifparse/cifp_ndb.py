@@ -1,4 +1,8 @@
-from .cifp_functions import convert_dms, convert_mag_var
+from .cifp_functions import convert_dms, convert_mag_var, clean_value
+
+from sqlite3 import Cursor
+
+TABLE_NAME = "ndbs"
 
 
 class CIFP_NDB:
@@ -71,24 +75,101 @@ class CIFP_NDB:
         self.application = cifp_line[22:23].strip()
         self.notes = cifp_line[23:91].strip()
 
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = "DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `airport_id`,
+                `airport_region`,
+                `ndb_id`,
+                `ndb_region`,
+                `frequency`,
+                `nav_class`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `datum_code`,
+                `name`,
+                `application`,
+                `notes`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `airport_id`,
+                `airport_region`,
+                `ndb_id`,
+                `ndb_region`,
+                `frequency`,
+                `nav_class`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `datum_code`,
+                `name`,
+                `application`,
+                `notes`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.sub_code),
+                clean_value(self.airport_id),
+                clean_value(self.airport_region),
+                clean_value(self.ndb_id),
+                clean_value(self.ndb_region),
+                clean_value(self.frequency),
+                clean_value(self.nav_class),
+                clean_value(self.lat),
+                clean_value(self.lon),
+                clean_value(self.mag_var),
+                clean_value(self.datum_code),
+                clean_value(self.name),
+                clean_value(self.application),
+                clean_value(self.notes),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
+
     def to_dict(self) -> dict:
         return {
-            "area": self.area,
-            "sec_code": self.sec_code,
-            "sub_code": self.sub_code,
-            "airport_id": self.airport_id,
-            "airport_region": self.airport_region,
-            "ndb_id": self.ndb_id,
-            "ndb_region": self.ndb_region,
-            "frequency": self.frequency,
-            "nav_class": self.nav_class,
-            "lat": self.lat,
-            "lon": self.lon,
-            "mag_var": self.mag_var,
-            "datum_code": self.datum_code,
-            "name": self.name,
-            "application": self.application,
-            "notes": self.notes,
-            "record_number": self.record_number,
-            "cycle_data": self.cycle_data,
+            "area": clean_value(self.area),
+            "sec_code": clean_value(self.sec_code),
+            "sub_code": clean_value(self.sub_code),
+            "airport_id": clean_value(self.airport_id),
+            "airport_region": clean_value(self.airport_region),
+            "ndb_id": clean_value(self.ndb_id),
+            "ndb_region": clean_value(self.ndb_region),
+            "frequency": clean_value(self.frequency),
+            "nav_class": clean_value(self.nav_class),
+            "lat": clean_value(self.lat),
+            "lon": clean_value(self.lon),
+            "mag_var": clean_value(self.mag_var),
+            "datum_code": clean_value(self.datum_code),
+            "name": clean_value(self.name),
+            "application": clean_value(self.application),
+            "notes": clean_value(self.notes),
+            "record_number": clean_value(self.record_number),
+            "cycle_data": clean_value(self.cycle_data),
         }

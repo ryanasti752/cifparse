@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, convert_dms, translate_rnp
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "controlled_airspace_points"
+
 
 class CIFPControlledAirspacePoint:
     def __init__(self) -> None:
@@ -83,6 +87,116 @@ class CIFPControlledAirspacePoint:
 
         if self.rnp != "":
             self.rnp = translate_rnp(self.rnp)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `region`,
+                `airspace_type`,
+                `center_id`,
+                `center_sec_code`,
+                `center_sub_code`,
+                `airspace_class`,
+                `multiple_code`,
+                `sequence_number`,
+                `level`,
+                `time_zone`,
+                `notam`,
+                `boundary_via`,
+                `lat`,
+                `lon`,
+                `arc_lat`,
+                `arc_lon`,
+                `arc_dist`,
+                `arc_bearing`,
+                `rnp`,
+                `lower_limit`,
+                `lower_unit`,
+                `upper_limit`,
+                `upper_unit`,
+                `airspace_name`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `region`,
+                `airspace_type`,
+                `center_id`,
+                `center_sec_code`,
+                `center_sub_code`,
+                `airspace_class`,
+                `multiple_code`,
+                `sequence_number`,
+                `level`,
+                `time_zone`,
+                `notam`,
+                `boundary_via`,
+                `lat`,
+                `lon`,
+                `arc_lat`,
+                `arc_lon`,
+                `arc_dist`,
+                `arc_bearing`,
+                `rnp`,
+                `lower_limit`,
+                `lower_unit`,
+                `upper_limit`,
+                `upper_unit`,
+                `airspace_name`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.sub_code),
+                clean_value(self.region),
+                clean_value(self.airspace_type),
+                clean_value(self.center_id),
+                clean_value(self.center_sec_code),
+                clean_value(self.center_sub_code),
+                clean_value(self.airspace_class),
+                clean_value(self.multiple_code),
+                clean_value(self.sequence_number),
+                clean_value(self.level),
+                clean_value(self.time_zone),
+                clean_value(self.notam),
+                clean_value(self.boundary_via),
+                clean_value(self.lat),
+                clean_value(self.lon),
+                clean_value(self.arc_lat),
+                clean_value(self.arc_lon),
+                clean_value(self.arc_dist),
+                clean_value(self.arc_bearing),
+                clean_value(self.rnp),
+                clean_value(self.lower_limit),
+                clean_value(self.lower_unit),
+                clean_value(self.upper_limit),
+                clean_value(self.upper_unit),
+                clean_value(self.airspace_name),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

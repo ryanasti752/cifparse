@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, translate_rnp
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "airway_points"
+
 
 class CIFPAirwayPoint:
     def __init__(self) -> None:
@@ -108,6 +112,125 @@ class CIFPAirwayPoint:
 
     def set_sig_point(self, sig_point: str):
         self.sig_point = sig_point
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `airway_id`,
+                `six_char`,
+                `sequence_number`,
+                `point_id`,
+                `point_region`,
+                `point_sec_code`,
+                `point_sub_code`,
+                `description_code`,
+                `bound_code`,
+                `route_type`,
+                `level`,
+                `direct`,
+                `tc_ind`,
+                `eu_ind`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `rnp`,
+                `theta`,
+                `rho`,
+                `out_mag_crs`,
+                `from_dist`,
+                `in_mag_crs`,
+                `min_alt`,
+                `min_alt_2`,
+                `max_alt`,
+                `fix_radius`,
+                `sig_point`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `airway_id`,
+                `six_char`,
+                `sequence_number`,
+                `point_id`,
+                `point_region`,
+                `point_sec_code`,
+                `point_sub_code`,
+                `description_code`,
+                `bound_code`,
+                `route_type`,
+                `level`,
+                `direct`,
+                `tc_ind`,
+                `eu_ind`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `rnp`,
+                `theta`,
+                `rho`,
+                `out_mag_crs`,
+                `from_dist`,
+                `in_mag_crs`,
+                `min_alt`,
+                `min_alt_2`,
+                `max_alt`,
+                `fix_radius`,
+                `sig_point`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.sub_code),
+                clean_value(self.airway_id),
+                clean_value(self.six_char),
+                clean_value(self.sequence_number),
+                clean_value(self.point_id),
+                clean_value(self.point_region),
+                clean_value(self.point_sec_code),
+                clean_value(self.point_sub_code),
+                clean_value(self.description_code),
+                clean_value(self.bound_code),
+                clean_value(self.route_type),
+                clean_value(self.level),
+                clean_value(self.direct),
+                clean_value(self.tc_ind),
+                clean_value(self.eu_ind),
+                clean_value(self.rec_vhf),
+                clean_value(self.rec_vhf_region),
+                clean_value(self.rnp),
+                clean_value(self.theta),
+                clean_value(self.rho),
+                clean_value(self.out_mag_crs),
+                clean_value(self.from_dist),
+                clean_value(self.in_mag_crs),
+                clean_value(self.min_alt),
+                clean_value(self.min_alt_2),
+                clean_value(self.max_alt),
+                clean_value(self.fix_radius),
+                clean_value(self.sig_point),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

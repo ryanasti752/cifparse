@@ -4,6 +4,10 @@ from .cifp_procedure import CIFPProcedure
 from .cifp_runway import CIFPRunway
 from .cifp_waypoint import CIFPWaypoint
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "airports"
+
 
 class CIFPAirport:
     def __init__(self) -> None:
@@ -180,6 +184,132 @@ class CIFPAirport:
         loc_gs = CIFP_LOC_GS()
         loc_gs.from_lines([cifp_line])
         self.loc_gs.append(loc_gs)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFP_LOC_GS.create_db_table(db_cursor)
+        CIFPProcedure.create_db_table(db_cursor)
+        CIFPRunway.create_db_table(db_cursor)
+
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `airport_id`,
+                `region`,
+                `sub_code`,
+                `iata`,
+                `cont_rec_no`,
+                `limit_alt`,
+                `longest`,
+                `is_ifr`,
+                `longest_surface`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `elevation`,
+                `limit`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `transition_alt`,
+                `transition_level`,
+                `usage`,
+                `time_zone`,
+                `daylight_ind`,
+                `mag_true`,
+                `datum_code`,
+                `airport_name`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.loc_gs:
+            item.to_db(db_cursor)
+
+        for item in self.departures:
+            item.to_db(db_cursor)
+
+        for item in self.arrivals:
+            item.to_db(db_cursor)
+
+        for item in self.approaches:
+            item.to_db(db_cursor)
+
+        for item in self.runways:
+            item.to_db(db_cursor)
+
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `airport_id`,
+                `region`,
+                `sub_code`,
+                `iata`,
+                `cont_rec_no`,
+                `limit_alt`,
+                `longest`,
+                `is_ifr`,
+                `longest_surface`,
+                `lat`,
+                `lon`,
+                `mag_var`,
+                `elevation`,
+                `limit`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `transition_alt`,
+                `transition_level`,
+                `usage`,
+                `time_zone`,
+                `daylight_ind`,
+                `mag_true`,
+                `datum_code`,
+                `airport_name`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.airport_id),
+                clean_value(self.region),
+                clean_value(self.sub_code),
+                clean_value(self.iata),
+                clean_value(self.cont_rec_no),
+                clean_value(self.limit_alt),
+                clean_value(self.longest),
+                clean_value(self.is_ifr),
+                clean_value(self.longest_surface),
+                clean_value(self.lat),
+                clean_value(self.lon),
+                clean_value(self.mag_var),
+                clean_value(self.elevation),
+                clean_value(self.limit),
+                clean_value(self.rec_vhf),
+                clean_value(self.rec_vhf_region),
+                clean_value(self.transition_alt),
+                clean_value(self.transition_level),
+                clean_value(self.usage),
+                clean_value(self.time_zone),
+                clean_value(self.daylight_ind),
+                clean_value(self.mag_true),
+                clean_value(self.datum_code),
+                clean_value(self.airport_name),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         points = []

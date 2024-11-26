@@ -1,6 +1,10 @@
 from .cifp_restrictive_airspace_point import CIFPRestrictiveAirspacePoint
 from .cifp_functions import clean_value
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "restrictive_airspace_segments"
+
 
 class CIFPRestrictiveAirspaceSegment:
     def __init__(self) -> None:
@@ -35,6 +39,49 @@ class CIFPRestrictiveAirspaceSegment:
             point = CIFPRestrictiveAirspacePoint()
             point.from_line(cifp_line)
             self.points.append(point)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFPRestrictiveAirspacePoint.create_db_table(db_cursor)
+
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `multiple_code`,
+                `lower_limit`,
+                `lower_unit`,
+                `upper_limit`,
+                `upper_unit`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.points:
+            item.to_db(db_cursor)
+
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `multiple_code`,
+                `lower_limit`,
+                `lower_unit`,
+                `upper_limit`,
+                `upper_unit`
+            ) VALUES (
+                ?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.multiple_code),
+                clean_value(self.lower_limit),
+                clean_value(self.lower_unit),
+                clean_value(self.upper_limit),
+                clean_value(self.upper_unit),
+            ),
+        )
 
     def to_dict(self) -> dict:
         points = []

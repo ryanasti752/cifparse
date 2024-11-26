@@ -1,6 +1,10 @@
 from .cifp_airway_point import CIFPAirwayPoint
 from .cifp_functions import clean_value
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "airways"
+
 
 class CIFPAirway:
     def __init__(self) -> None:
@@ -59,6 +63,55 @@ class CIFPAirway:
         # PAD 38
         self.application = cifp_line[39:40]
         self.notes = cifp_line[40:109]
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFPAirwayPoint.create_db_table(db_cursor)
+
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `airway_id`,
+                `six_char`,
+                `application`,
+                `notes`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.points:
+            item.to_db(db_cursor)
+
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `airway_id`,
+                `six_char`,
+                `application`,
+                `notes`
+            ) VALUES (
+                ?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.sub_code),
+                clean_value(self.airway_id),
+                clean_value(self.six_char),
+                clean_value(self.six_char),
+                clean_value(self.application),
+            ),
+        )
 
     def to_dict(self) -> dict:
         points = []

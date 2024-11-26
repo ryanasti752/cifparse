@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, convert_dms
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "runways"
+
 
 class CIFPRunway:
     def __init__(self) -> None:
@@ -91,6 +95,98 @@ class CIFPRunway:
 
         if runway_stopway != "":
             self.stopway = int(runway_stopway)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = "DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `airport_id`,
+                `region`,
+                `runway_id`,
+                `length`,
+                `bearing`,
+                `lat`,
+                `lon`,
+                `gradient`,
+                `ellipsoidal_height`,
+                `threshold_elevation`,
+                `displaced_threshold`,
+                `tch`,
+                `width`,
+                `tch_id`,
+                `ls_ident`,
+                `cat`,
+                `stopway`,
+                `ls_ident_2`,
+                `cat_2`,
+                `description`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `airport_id`,
+                `region`,
+                `runway_id`,
+                `length`,
+                `bearing`,
+                `lat`,
+                `lon`,
+                `gradient`,
+                `ellipsoidal_height`,
+                `threshold_elevation`,
+                `displaced_threshold`,
+                `tch`,
+                `width`,
+                `tch_id`,
+                `ls_ident`,
+                `cat`,
+                `stopway`,
+                `ls_ident_2`,
+                `cat_2`,
+                `description`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.airport_id),
+                clean_value(self.region),
+                clean_value(self.runway_id),
+                clean_value(self.length),
+                clean_value(self.bearing),
+                clean_value(self.lat),
+                clean_value(self.lon),
+                clean_value(self.gradient),
+                clean_value(self.ellipsoidal_height),
+                clean_value(self.threshold_elevation),
+                clean_value(self.displaced_threshold),
+                clean_value(self.tch),
+                clean_value(self.width),
+                clean_value(self.tch_id),
+                clean_value(self.ls_ident),
+                clean_value(self.cat),
+                clean_value(self.stopway),
+                clean_value(self.ls_ident_2),
+                clean_value(self.cat_2),
+                clean_value(self.description),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

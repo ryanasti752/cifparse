@@ -1,6 +1,8 @@
 from .cifp_functions import chunk, clean_value
 from .cifp_procedure_segment import CIFPProcedureSegment
 
+from sqlite3 import Cursor
+
 # FOR ENTIRE COLLECTION OF PD/PE/PF AND HD/HE/HF
 
 
@@ -25,6 +27,13 @@ class CIFPProcedure:
             segment = CIFPProcedureSegment()
             segment.from_lines(segment_chunk)
             self.segments.append(segment)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFPProcedureSegment.create_db_table(db_cursor)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.segments:
+            item.to_db(db_cursor)
 
     def to_dict(self) -> dict:
         segments = []

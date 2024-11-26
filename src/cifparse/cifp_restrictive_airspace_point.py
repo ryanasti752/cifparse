@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, convert_dms
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "restrictive_airspace_points"
+
 
 class CIFPRestrictiveAirspacePoint:
     def __init__(self) -> None:
@@ -72,6 +76,104 @@ class CIFPRestrictiveAirspacePoint:
 
         if arc_bearing != "":
             self.arc_bearing = int(arc_bearing) / 10
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `region`,
+                `restrictive_type`,
+                `restrictive_designation`,
+                `multiple_code`,
+                `sequence_number`,
+                `level`,
+                `time_zone`,
+                `notam`,
+                `boundary_via`,
+                `lat`,
+                `lon`,
+                `arc_lat`,
+                `arc_lon`,
+                `arc_dist`,
+                `arc_bearing`,
+                `lower_limit`,
+                `lower_unit`,
+                `upper_limit`,
+                `upper_unit`,
+                `restrictive_name`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `region`,
+                `restrictive_type`,
+                `restrictive_designation`,
+                `multiple_code`,
+                `sequence_number`,
+                `level`,
+                `time_zone`,
+                `notam`,
+                `boundary_via`,
+                `lat`,
+                `lon`,
+                `arc_lat`,
+                `arc_lon`,
+                `arc_dist`,
+                `arc_bearing`,
+                `lower_limit`,
+                `lower_unit`,
+                `upper_limit`,
+                `upper_unit`,
+                `restrictive_name`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.sub_code),
+                clean_value(self.region),
+                clean_value(self.restrictive_type),
+                clean_value(self.restrictive_designation),
+                clean_value(self.multiple_code),
+                clean_value(self.sequence_number),
+                clean_value(self.level),
+                clean_value(self.time_zone),
+                clean_value(self.notam),
+                clean_value(self.boundary_via),
+                clean_value(self.lat),
+                clean_value(self.lon),
+                clean_value(self.arc_lat),
+                clean_value(self.arc_lon),
+                clean_value(self.arc_dist),
+                clean_value(self.arc_bearing),
+                clean_value(self.lower_limit),
+                clean_value(self.lower_unit),
+                clean_value(self.upper_limit),
+                clean_value(self.upper_unit),
+                clean_value(self.restrictive_name),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

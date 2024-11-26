@@ -1,6 +1,8 @@
 from .cifp_functions import chunk, clean_value
 from .cifp_procedure_subsegment import CIFPProcedureSubsegment
 
+from sqlite3 import Cursor
+
 # FOR COLLECTION OF SUBSEGMENTS OF PD/PE/PF AND HD/HE/HF
 
 
@@ -110,6 +112,13 @@ class CIFPProcedureSegment:
             if route_type == "Z":
                 result = "Missed"
         return result
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFPProcedureSubsegment.create_db_table(db_cursor)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.subsegments:
+            item.to_db(db_cursor)
 
     def to_dict(self) -> dict:
         subsegments = []

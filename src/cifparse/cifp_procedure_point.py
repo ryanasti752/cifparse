@@ -1,5 +1,9 @@
 from .cifp_functions import clean_value, translate_rnp
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "procedure_points"
+
 # FOR PD/PE/PF AND HD/HE/HF
 
 
@@ -148,6 +152,173 @@ class CIFPProcedurePoint:
 
         if vert_angle != "":
             self.vertical_angle = int(vert_angle)
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `fac_id`,
+                `fac_region`,
+                `fac_sub_code`,
+                `procedure_id`,
+                `route_type`,
+                `transition_id`,
+                `sequence_number`,
+                `fix_id`,
+                `fix_region`,
+                `fix_sec_code`,
+                `fix_sub_code`,
+                `description_code`,
+                `turn_direction`,
+                `rnp`,
+                `path_term`,
+                `tdv`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `arc_radius`,
+                `theta`,
+                `rho`,
+                `course`,
+                `dist`,
+                `time`,
+                `rec_vhf_sec_code`,
+                `rec_vhf_sub_code`,
+                `alt_desc`,
+                `atc`,
+                `altitude`,
+                `flight_level`,
+                `altitude_2`,
+                `flight_level_2`,
+                `trans_alt`,
+                `speed_limit`,
+                `vert_angle`,
+                `center_fix`,
+                `multiple_code`,
+                `center_fix_region`,
+                `center_fix_sec_code`,
+                `center_fix_sub_code`,
+                `gns_fms_id`,
+                `speed_limit_2`,
+                `rte_qual_1`,
+                `rte_qual_2`,
+                `record_number`,
+                `cycle_data`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `fac_id`,
+                `fac_region`,
+                `fac_sub_code`,
+                `procedure_id`,
+                `route_type`,
+                `transition_id`,
+                `sequence_number`,
+                `fix_id`,
+                `fix_region`,
+                `fix_sec_code`,
+                `fix_sub_code`,
+                `description_code`,
+                `turn_direction`,
+                `rnp`,
+                `path_term`,
+                `tdv`,
+                `rec_vhf`,
+                `rec_vhf_region`,
+                `arc_radius`,
+                `theta`,
+                `rho`,
+                `course`,
+                `dist`,
+                `time`,
+                `rec_vhf_sec_code`,
+                `rec_vhf_sub_code`,
+                `alt_desc`,
+                `atc`,
+                `altitude`,
+                `flight_level`,
+                `altitude_2`,
+                `flight_level_2`,
+                `trans_alt`,
+                `speed_limit`,
+                `vert_angle`,
+                `center_fix`,
+                `multiple_code`,
+                `center_fix_region`,
+                `center_fix_sec_code`,
+                `center_fix_sub_code`,
+                `gns_fms_id`,
+                `speed_limit_2`,
+                `rte_qual_1`,
+                `rte_qual_2`,
+                `record_number`,
+                `cycle_data`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.fac_id),
+                clean_value(self.fac_region),
+                clean_value(self.fac_sub_code),
+                clean_value(self.procedure_id),
+                clean_value(self.route_type),
+                clean_value(self.transition_id),
+                clean_value(self.sequence_number),
+                clean_value(self.fix_id),
+                clean_value(self.fix_region),
+                clean_value(self.fix_sec_code),
+                clean_value(self.fix_sub_code),
+                clean_value(self.description_code),
+                clean_value(self.turn_direction),
+                clean_value(self.rnp),
+                clean_value(self.path_term),
+                clean_value(self.tdv),
+                clean_value(self.rec_vhf),
+                clean_value(self.rec_vhf_region),
+                clean_value(self.arc_radius),
+                clean_value(self.theta),
+                clean_value(self.rho),
+                clean_value(self.course),
+                clean_value(self.dist),
+                clean_value(self.time),
+                clean_value(self.rec_vhf_sec_code),
+                clean_value(self.rec_vhf_sub_code),
+                clean_value(self.alt_desc),
+                clean_value(self.atc),
+                clean_value(self.altitude),
+                clean_value(self.flight_level),
+                clean_value(self.altitude_2),
+                clean_value(self.flight_level_2),
+                clean_value(self.trans_alt),
+                clean_value(self.speed_limit),
+                clean_value(self.vert_angle),
+                clean_value(self.center_fix),
+                clean_value(self.multiple_code),
+                clean_value(self.center_fix_region),
+                clean_value(self.center_fix_sec_code),
+                clean_value(self.center_fix_sub_code),
+                clean_value(self.gns_fms_id),
+                clean_value(self.speed_limit_2),
+                clean_value(self.rte_qual_1),
+                clean_value(self.rte_qual_2),
+                clean_value(self.record_number),
+                clean_value(self.cycle_data),
+            ),
+        )
 
     def to_dict(self) -> dict:
         return {

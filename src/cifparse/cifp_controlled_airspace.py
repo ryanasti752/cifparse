@@ -1,6 +1,10 @@
 from .cifp_functions import chunk, clean_value
 from .cifp_controlled_airspace_segment import CIFPControlledAirspaceSegment
 
+from sqlite3 import Cursor
+
+TABLE_NAME = "controlled_airspace"
+
 
 class CIFPControlledAirspace:
     def __init__(self) -> None:
@@ -74,6 +78,97 @@ class CIFPControlledAirspace:
         self.controlling_agency = cifp_line[99:123].strip()
         # self.record_number = cifp_line[123:128].strip()
         # self.cycle_data = cifp_line[128:132].strip()
+
+    def create_db_table(db_cursor: Cursor) -> None:
+        CIFPControlledAirspaceSegment.create_db_table(db_cursor)
+
+        drop_statement = f"DROP TABLE IF EXISTS `{TABLE_NAME}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `region`,
+                `airspace_type`,
+                `center_id`,
+                `center_sec_code`,
+                `center_sub_code`,
+                `airspace_class`,
+                `application`,
+                `time_code`,
+                `notam`,
+                `time_ind`,
+                `op_time_1`,
+                `op_time_2`,
+                `op_time_3`,
+                `op_time_4`,
+                `op_time_5`,
+                `op_time_6`,
+                `op_time_7`,
+                `controlling_agency`
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for item in self.segments:
+            item.to_db(db_cursor)
+
+        insert_statement = f"""
+            INSERT INTO `{TABLE_NAME}` (
+                `area`,
+                `sec_code`,
+                `sub_code`,
+                `region`,
+                `airspace_type`,
+                `center_id`,
+                `center_sec_code`,
+                `center_sub_code`,
+                `airspace_class`,
+                `application`,
+                `time_code`,
+                `notam`,
+                `time_ind`,
+                `op_time_1`,
+                `op_time_2`,
+                `op_time_3`,
+                `op_time_4`,
+                `op_time_5`,
+                `op_time_6`,
+                `op_time_7`,
+                `controlling_agency`
+            ) VALUES (
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement,
+            (
+                clean_value(self.area),
+                clean_value(self.sec_code),
+                clean_value(self.sub_code),
+                clean_value(self.region),
+                clean_value(self.airspace_type),
+                clean_value(self.center_id),
+                clean_value(self.center_sec_code),
+                clean_value(self.center_sub_code),
+                clean_value(self.airspace_class),
+                clean_value(self.application),
+                clean_value(self.time_code),
+                clean_value(self.notam),
+                clean_value(self.time_ind),
+                clean_value(self.op_time_1),
+                clean_value(self.op_time_2),
+                clean_value(self.op_time_3),
+                clean_value(self.op_time_4),
+                clean_value(self.op_time_5),
+                clean_value(self.op_time_6),
+                clean_value(self.op_time_7),
+                clean_value(self.controlling_agency),
+            ),
+        )
 
     def to_dict(self) -> dict:
         segments = []
