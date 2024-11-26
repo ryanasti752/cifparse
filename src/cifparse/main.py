@@ -9,6 +9,7 @@ from .cifp_controlled_airspace import CIFPControlledAirspace
 from .cifp_restrictive_airspace import CIFPRestrictiveAirspace
 
 import os
+from sqlite3 import Cursor
 
 
 class CIFP:
@@ -133,6 +134,41 @@ class CIFP:
             restrictive = CIFPRestrictiveAirspace()
             restrictive.from_lines(restrictive_chunk)
             self._restrictive.append(restrictive)
+
+    def initialize_database(self, db_cursor: Cursor) -> None:
+        CIFPAirport.create_db_table(db_cursor)
+        CIFPWaypoint.create_db_table(db_cursor)
+        CIFPHeliport.create_db_table(db_cursor)
+        CIFP_NDB.create_db_table(db_cursor)
+        CIFPAirway.create_db_table(db_cursor)
+        CIFP_VHF_DME.create_db_table(db_cursor)
+        CIFPControlledAirspace.create_db_table(db_cursor)
+        CIFPRestrictiveAirspace.create_db_table(db_cursor)
+
+    def to_db(self, db_cursor: Cursor) -> None:
+        for airport in self._airport:
+            airport.to_db(db_cursor)
+
+        for waypoint in self._waypoint:
+            waypoint.to_db(db_cursor)
+
+        for heliport in self._heliport:
+            heliport.to_db(db_cursor)
+
+        for ndb in self._ndb:
+            ndb.to_db(db_cursor)
+
+        for airway in self._airway:
+            airway.to_db(db_cursor)
+
+        for vhf_dme in self._vhf_dme:
+            vhf_dme.to_db(db_cursor)
+
+        for controlled in self._controlled:
+            controlled.to_db(db_cursor)
+
+        for restrictive in self._restrictive:
+            restrictive.to_db(db_cursor)
 
     def parse_airports(self) -> None:
         if self._exists:
