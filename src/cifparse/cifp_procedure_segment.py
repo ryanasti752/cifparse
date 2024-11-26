@@ -2,13 +2,13 @@ from .cifp_functions import chunk, clean_value
 from .cifp_procedure_point import CIFPProcedurePoint
 from .cifp_procedure_subsegment import CIFPProcedureSubsegment
 
-# FOR CORE AND COLLECTION OF TRANSITIONS OF PD/PE/PF AND HD/HE/HF
+# FOR COLLECTION OF SUBSEGMENTS OF PD/PE/PF AND HD/HE/HF
 
 
 class CIFPProcedureSegment:
     def __init__(self) -> None:
         self.type = None
-        self.transitions: list[CIFPProcedureSubsegment] = []
+        self.subsegments: list[CIFPProcedureSubsegment] = []
         self.points: list[CIFPProcedurePoint] = []
 
     def from_lines(self, cifp_lines: list) -> None:
@@ -17,46 +17,11 @@ class CIFPProcedureSegment:
         route_type = initial[19:20].strip()
         self.type = self._translate_route_type(sub_code, route_type)
 
-        is_core = self._determine_core(sub_code, route_type)
-        if is_core:
-            for cifp_line in cifp_lines:
-                cont_rec_no = int(cifp_line[38:39])
-                if cont_rec_no == 0 or cont_rec_no == 1:
-                    self._cont0(cifp_line)
-        else:
-            sub_chunked = chunk(cifp_lines, 20, 25)
-            for sub_chunk in sub_chunked:
-                transition = CIFPProcedureSubsegment()
-                transition.from_lines(sub_chunk)
-                self.transitions.append(transition)
-
-    def _cont0(self, cifp_line: str) -> None:
-        point = CIFPProcedurePoint()
-        point.from_line(cifp_line)
-        self.points.append(point)
-
-    def _determine_core(self, sub_code: str, route_type: str) -> bool:
-        result = False
-        if sub_code == "D":
-            if (
-                route_type == "0"
-                or route_type == "2"
-                or route_type == "5"
-                or route_type == "M"
-            ):
-                result = True
-        if sub_code == "E":
-            if (
-                route_type == "2"
-                or route_type == "5"
-                or route_type == "8"
-                or route_type == "M"
-            ):
-                result = True
-        if sub_code == "F":
-            if route_type != "A" and route_type != "Z":
-                result = True
-        return result
+        sub_chunked = chunk(cifp_lines, 20, 25)
+        for sub_chunk in sub_chunked:
+            subsegment = CIFPProcedureSubsegment()
+            subsegment.from_lines(sub_chunk)
+            self.subsegments.append(subsegment)
 
     def _translate_route_type(self, sub_code: str, route_type: str) -> str | None:
         result = None
@@ -78,7 +43,7 @@ class CIFPProcedureSegment:
                 or route_type == "S"
                 or route_type == "V"
             ):
-                result = "transition"
+                result = "enroute_transition"
         if sub_code == "E":
             if (
                 route_type == "1"
@@ -86,7 +51,7 @@ class CIFPProcedureSegment:
                 or route_type == "7"
                 or route_type == "F"
             ):
-                result = "transition"
+                result = "enroute_transition"
             if (
                 route_type == "2"
                 or route_type == "5"
@@ -149,12 +114,12 @@ class CIFPProcedureSegment:
         return result
 
     def to_dict(self) -> dict:
-        if len(self.transitions) > 0:
-            transitions = []
-            for item in self.transitions:
-                transitions.append(item.to_dict())
+        if len(self.subsegments) > 0:
+            subsegments = []
+            for item in self.subsegments:
+                subsegments.append(item.to_dict())
 
-            return {"type": clean_value(self.type), "transitions": transitions}
+            return {"type": clean_value(self.type), "subsegments": subsegments}
 
         points = []
         for item in self.points:
@@ -164,3 +129,27 @@ class CIFPProcedureSegment:
             "type": self.type,
             "points": points,
         }
+
+    # No longer used, but kept just in case.
+    def _determine_core(self, sub_code: str, route_type: str) -> bool:
+        result = False
+        if sub_code == "D":
+            if (
+                route_type == "0"
+                or route_type == "2"
+                or route_type == "5"
+                or route_type == "M"
+            ):
+                result = True
+        if sub_code == "E":
+            if (
+                route_type == "2"
+                or route_type == "5"
+                or route_type == "8"
+                or route_type == "M"
+            ):
+                result = True
+        if sub_code == "F":
+            if route_type != "A" and route_type != "Z":
+                result = True
+        return result

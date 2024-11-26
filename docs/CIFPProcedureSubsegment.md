@@ -2,7 +2,7 @@
 
 The CIFP procedure subsegment object comprises the following fields:
 
-- transition_id: The ID (or computer code) of the transition.
+- segment_id: The ID (or computer code) of the segment.
 
 Additionally, the procedure subsegment object has lists of child objects:
 

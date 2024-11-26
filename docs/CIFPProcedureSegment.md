@@ -6,5 +6,5 @@ The CIFP procedure segment object comprises the following fields:
 
 Additionally, the procedure segment object has lists of child objects:
 
-- transitions: A list of [CIFPProcedureSubsegment] objects.
+- subsegments: A list of [CIFPProcedureSubsegment] objects.
 - points: A list of [CIFPProcedurePoint] objects.
