@@ -9,13 +9,19 @@ from .cifp_controlled_airspace import CIFPControlledAirspace
 from .cifp_restrictive_airspace import CIFPRestrictiveAirspace
 
 import os
+from datetime import datetime, timedelta
 from sqlite3 import Cursor
 
 
 class CIFP:
+    CYCLE_LENGTH_DAYS = 28
+
     def __init__(self, path: str) -> None:
         self._exists = False
         self._file_path = ""
+        self._cycle_id = None
+        self._effective_from = None
+        self._effective_to = None
         self._airport_lines: list[str] = []
         self._airport: list[CIFPAirport] = []
         self._waypoint_lines: list[str] = []
@@ -50,6 +56,16 @@ class CIFP:
     def _split_sections(self) -> None:
         with open(self._file_path) as cifpFile:
             for line in cifpFile:
+                header_id = line[0:5]
+                if header_id == "HDR04":
+                    self._cycle_id = line[80:84]
+                    effective_from = line[96:107]
+                    effective_from_obj = datetime.strptime(effective_from, "%d %b %Y")
+                    self._effective_from = effective_from_obj.strftime("%Y-%m-%d")
+                    effective_to_obj = effective_from_obj + timedelta(
+                        days=self.CYCLE_LENGTH_DAYS
+                    )
+                    self._effective_to = effective_to_obj.strftime("%Y-%m-%d")
                 section_id = line[4:6]
                 if section_id == "D ":
                     self._vhf_dme_lines.append(line)
@@ -135,7 +151,37 @@ class CIFP:
             restrictive.from_lines(restrictive_chunk)
             self._restrictive.append(restrictive)
 
+    def _create_validity_table(self, db_cursor: Cursor) -> None:
+        table_name = "validity"
+        drop_statement = f"DROP TABLE IF EXISTS `{table_name}`;"
+        db_cursor.execute(drop_statement)
+
+        create_statement = f"""
+            CREATE TABLE IF NOT EXISTS `{table_name}` (
+                `cycle_id` TEXT,
+                `valid_from` TEXT,
+                `valid_to` TEXT
+            );
+        """
+        db_cursor.execute(create_statement)
+
+    def _insert_validity(self, db_cursor: Cursor) -> None:
+        table_name = "validity"
+        insert_statement = f"""
+            INSERT INTO `{table_name}` (
+                `cycle_id`,
+                `valid_from`,
+                `valid_to`
+            ) VALUES (
+                ?,?,?
+            );
+        """
+        db_cursor.execute(
+            insert_statement, (self._cycle_id, self._effective_from, self._effective_to)
+        )
+
     def initialize_database(self, db_cursor: Cursor) -> None:
+        self._create_validity_table(db_cursor)
         CIFPAirport.create_db_table(db_cursor)
         CIFPWaypoint.create_db_table(db_cursor)
         CIFPHeliport.create_db_table(db_cursor)
@@ -146,6 +192,7 @@ class CIFP:
         CIFPRestrictiveAirspace.create_db_table(db_cursor)
 
     def to_db(self, db_cursor: Cursor) -> None:
+        self._insert_validity(db_cursor)
         for airport in self._airport:
             airport.to_db(db_cursor)
 
