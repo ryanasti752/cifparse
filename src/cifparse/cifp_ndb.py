@@ -81,24 +81,24 @@ class CIFP_NDB:
 
         create_statement = f"""
             CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
-                `area`,
-                `sec_code`,
-                `sub_code`,
-                `airport_id`,
-                `airport_region`,
-                `ndb_id`,
-                `ndb_region`,
-                `frequency`,
-                `nav_class`,
-                `lat`,
-                `lon`,
-                `mag_var`,
-                `datum_code`,
-                `name`,
-                `application`,
-                `notes`,
-                `record_number`,
-                `cycle_data`
+                `area` TEXT,
+                `sec_code` TEXT,
+                `sub_code` TEXT,
+                `airport_id` TEXT,
+                `airport_region` TEXT,
+                `ndb_id` TEXT,
+                `ndb_region` TEXT,
+                `frequency` REAL,
+                `nav_class` TEXT,
+                `lat` REAL,
+                `lon` REAL,
+                `mag_var` REAL,
+                `datum_code` TEXT,
+                `name` TEXT,
+                `application` TEXT,
+                `notes` TEXT,
+                `record_number` INTEGER,
+                `cycle_data` TEXT
             );
         """
         db_cursor.execute(create_statement)

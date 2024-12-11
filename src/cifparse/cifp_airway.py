@@ -72,13 +72,13 @@ class CIFPAirway:
 
         create_statement = f"""
             CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
-                `area`,
-                `sec_code`,
-                `sub_code`,
-                `airway_id`,
-                `six_char`,
-                `application`,
-                `notes`
+                `area` TEXT,
+                `sec_code` TEXT,
+                `sub_code` TEXT,
+                `airway_id` TEXT,
+                `six_char` TEXT,
+                `application` TEXT,
+                `notes` TEXT
             );
         """
         db_cursor.execute(create_statement)

@@ -84,23 +84,23 @@ class CIFPRestrictiveAirspace:
 
         create_statement = f"""
             CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
-                `area`,
-                `sec_code`,
-                `sub_code`,
-                `region`,
-                `restrictive_type`,
-                `restrictive_designation`,
-                `restrictive_name`,
-                `application`,
-                `time_ind`,
-                `op_time_1`,
-                `op_time_2`,
-                `op_time_3`,
-                `op_time_4`,
-                `op_time_5`,
-                `op_time_6`,
-                `op_time_7`,
-                `controlling_agency`
+                `area` TEXT,
+                `sec_code` TEXT,
+                `sub_code` TEXT,
+                `region` TEXT,
+                `restrictive_type` TEXT,
+                `restrictive_designation` TEXT,
+                `restrictive_name` TEXT,
+                `application` TEXT,
+                `time_ind` TEXT,
+                `op_time_1` TEXT,
+                `op_time_2` TEXT,
+                `op_time_3` TEXT,
+                `op_time_4` TEXT,
+                `op_time_5` TEXT,
+                `op_time_6` TEXT,
+                `op_time_7` TEXT,
+                `controlling_agency` TEXT
             );
         """
         db_cursor.execute(create_statement)

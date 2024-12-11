@@ -86,26 +86,26 @@ class CIFPWaypoint:
 
         create_statement = f"""
             CREATE TABLE IF NOT EXISTS `{TABLE_NAME}` (
-                `area`,
-                `sec_code`,
-                `sub_code`,
-                `environment`,
-                `environment_region`,
-                `waypoint_id`,
-                `region`,
-                `type`,
-                `usage`,
-                `lat`,
-                `lon`,
-                `mag_var`,
-                `elevation`,
-                `datum_code`,
-                `name`,
-                `name_description`,
-                `application`,
-                `notes`,
-                `record_number`,
-                `cycle_data`
+                `area` TEXT,
+                `sec_code` TEXT,
+                `sub_code` TEXT,
+                `environment` TEXT,
+                `environment_region` TEXT,
+                `waypoint_id` TEXT,
+                `region` TEXT,
+                `type` TEXT,
+                `usage` TEXT,
+                `lat` REAL,
+                `lon` REAL,
+                `mag_var` REAL,
+                `elevation` INTEGER,
+                `datum_code` TEXT,
+                `name` TEXT,
+                `name_description` TEXT,
+                `application` TEXT,
+                `notes` TEXT,
+                `record_number` INTEGER,
+                `cycle_data` TEXT
             );
         """
         db_cursor.execute(create_statement)
