@@ -1,5 +1,16 @@
 ## Changelog
 
+### [1.0.0] - 2024-12-11
+
+#### Added
+
+- Added `validity` table to easily verify the validity period for the data in the database.
+
+#### Changed
+
+- Fixed the lack of foreign key references on the `controlled_airspace_segments` and `restrictive_airspace_segments` tables.
+- Added detail to the `controlled_airspace_segments` and `restrictive_airspace_segments` to make querying the segment altitudes easier.
+
 ### [0.9.3] - 2024-11-25
 
 #### Added
