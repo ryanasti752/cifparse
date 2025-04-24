@@ -6,6 +6,7 @@ A python parser for the FAA CIFP.
 
 | Version | Description                                                         | Release Date |
 | ------- | ------------------------------------------------------------------- | ------------ |
+| 1.0.1   | Minor fixes to SQL statements.                                      | 2025-04-24   |
 | 1.0.0   | Updated table handling to include additional detail and data types. | 2024-12-11   |
 | 0.9.3   | Updated procedure handling (breaking changes) and database support. | 2024-11-15   |
 | 0.9.2   | Minor fixes.                                                        | 2024-07-13   |

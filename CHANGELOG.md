@@ -1,5 +1,9 @@
 ## Changelog
 
+### [1.0.1] - 2025-04-24
+
+- Minor fixes to SQL statements.
+
 ### [1.0.0] - 2024-12-11
 
 #### Added
