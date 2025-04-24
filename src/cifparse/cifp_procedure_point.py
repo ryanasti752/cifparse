@@ -182,7 +182,7 @@ class CIFPProcedurePoint:
                 `arc_radius` REAL,
                 `theta` REAL,
                 `rho` REAL,
-                `course` EARL,
+                `course` REAL,
                 `dist` REAL,
                 `time` REAL,
                 `rec_vhf_sec_code` TEXT,
