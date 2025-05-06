@@ -11,6 +11,7 @@ from .cifp_restrictive_airspace import CIFPRestrictiveAirspace
 import os
 from datetime import datetime, timedelta
 from sqlite3 import Cursor
+from typing import Union
 
 
 class CIFP:
