@@ -9,6 +9,7 @@ from .cifp_controlled_airspace import CIFPControlledAirspace
 from .cifp_restrictive_airspace import CIFPRestrictiveAirspace
 
 import os
+import sys  # Added sys module for stderr
 from datetime import datetime, timedelta
 from sqlite3 import Cursor
 from typing import Union
@@ -47,11 +48,12 @@ class CIFP:
     def _set_path(self, path: str) -> None:
         self._file_path = path
         if os.path.exists(self._file_path):
-            print(f"CIFP Parser :: Found CIFP file at: {path}")
+            print(f"CIFP Parser :: Found CIFP file at: {path}", file=sys.stderr)
             self._exists = True
         else:
             print(
-                f"CIFP Parser :: Unable to find CIFP file at: {path} :: Interpreted as {path}"
+                f"CIFP Parser :: Unable to find CIFP file at: {path} :: Interpreted as {path}",
+                file=sys.stderr
             )
 
     def _split_sections(self) -> None:
@@ -220,42 +222,42 @@ class CIFP:
 
     def parse_airports(self) -> None:
         if self._exists:
-            print("Processing Airports")
+            print("Processing Airports", file=sys.stderr)
             self._airport_to_object()
 
     def parse_heliports(self) -> None:
         if self._exists:
-            print("Processing Heliports")
+            print("Processing Heliports", file=sys.stderr)
             self._heliport_to_object()
 
     def parse_ndbs(self) -> None:
         if self._exists:
-            print("Processing NDBs")
+            print("Processing NDBs", file=sys.stderr)
             self._ndb_to_object()
 
     def parse_airways(self) -> None:
         if self._exists:
-            print("Processing Airways")
+            print("Processing Airways", file=sys.stderr)
             self._airway_to_object()
 
     def parse_vhf_dmes(self) -> None:
         if self._exists:
-            print("Processing VHF/DMEs")
+            print("Processing VHF/DMEs", file=sys.stderr)
             self._vhf_dme_to_object()
 
     def parse_waypoints(self) -> None:
         if self._exists:
-            print("Processing Waypoints")
+            print("Processing Waypoints", file=sys.stderr)
             self._waypoint_to_object()
 
     def parse_controlled(self) -> None:
         if self._exists:
-            print("Processing Controlled Airspace")
+            print("Processing Controlled Airspace", file=sys.stderr)
             self._controlled_to_object()
 
     def parse_restrictive(self) -> None:
         if self._exists:
-            print("Processing Restrictive Airspace")
+            print("Processing Restrictive Airspace", file=sys.stderr)
             self._restrictive_to_object()
 
     def parse(self) -> None:
@@ -269,11 +271,11 @@ class CIFP:
         self.parse_restrictive()
 
     def get_airports(self) -> list:
-        print(f"Fetching all airports.")
+        print(f"Fetching all airports.", file=sys.stderr)
         return self._airport
 
     def find_airport(self, airport_id: str) -> Union[CIFPAirport, None]:
-        print(f'Finding airport with ID "{airport_id}"')
+        print(f'Finding airport with ID "{airport_id}"', file=sys.stderr)
         result = None
         for airport in self._airport:
             if airport.airport_id == airport_id:
@@ -281,24 +283,24 @@ class CIFP:
         return result
 
     def get_heliports(self) -> list:
-        print(f"Fetching all heliports.")
+        print(f"Fetching all heliports.", file=sys.stderr)
         return self._heliport
 
     def find_heliport(self, heliport_id: str) -> Union[CIFPHeliport, None]:
-        print(f'Finding heliport with ID "{heliport_id}"')
+        print(f'Finding heliport with ID "{heliport_id}"', file=sys.stderr)
         result = None
         for heliport in self._heliport:
-            print(heliport.heliport_id)
+            print(heliport.heliport_id, file=sys.stderr)
             if heliport.heliport_id == heliport_id:
                 result = heliport
         return result
 
     def get_airways(self) -> list:
-        print(f"Fetching all airways.")
+        print(f"Fetching all airways.", file=sys.stderr)
         return self._airway
 
     def find_airway(self, airway_id: str) -> Union[CIFPAirway, None]:
-        print(f'Finding airway with ID "{airway_id}"')
+        print(f'Finding airway with ID "{airway_id}"', file=sys.stderr)
         result = None
         for airway in self._airway:
             if airway.airway_id == airway_id:
@@ -306,11 +308,11 @@ class CIFP:
         return result
 
     def get_ndbs(self) -> list:
-        print(f"Fetching all NDBs.")
+        print(f"Fetching all NDBs.", file=sys.stderr)
         return self._ndb
 
     def find_ndb(self, ndb_id: str) -> Union[CIFP_NDB, None]:
-        print(f'Finding NDB with ID "{ndb_id}"')
+        print(f'Finding NDB with ID "{ndb_id}"', file=sys.stderr)
         result = None
         for ndb in self._ndb:
             if ndb.ndb_id == ndb_id:
@@ -318,11 +320,11 @@ class CIFP:
         return result
 
     def get_vhf_dmes(self) -> list:
-        print(f"Fetching all VHF/DMEs.")
+        print(f"Fetching all VHF/DMEs.", file=sys.stderr)
         return self._vhf_dme
 
     def find_vhf_dme(self, vhf_dme_id: str) -> Union[CIFP_VHF_DME, None]:
-        print(f'Finding VHF/DME navaid with ID "{vhf_dme_id}"')
+        print(f'Finding VHF/DME navaid with ID "{vhf_dme_id}"', file=sys.stderr)
         result = None
         for vhf_dme in self._vhf_dme:
             if vhf_dme.vhf_id == vhf_dme_id:
@@ -330,11 +332,11 @@ class CIFP:
         return result
 
     def get_waypoints(self) -> list:
-        print(f"Fetching all waypoints.")
+        print(f"Fetching all waypoints.", file=sys.stderr)
         return self._waypoint
 
     def find_waypoint(self, waypoint_id: str) -> Union[CIFPWaypoint, None]:
-        print(f'Finding waypoint with ID "{waypoint_id}"')
+        print(f'Finding waypoint with ID "{waypoint_id}"', file=sys.stderr)
         result = None
         for waypoint in self._waypoint:
             if waypoint.waypoint_id == waypoint_id:
@@ -342,11 +344,11 @@ class CIFP:
         return result
 
     def get_controlled(self) -> list:
-        print(f"Fetching all controlled airspace.")
+        print(f"Fetching all controlled airspace.", file=sys.stderr)
         return self._controlled
 
     def find_controlled(self, center_id: str) -> Union[CIFPControlledAirspace, None]:
-        print(f'Finding controlled airspace with center point "{center_id}"')
+        print(f'Finding controlled airspace with center point "{center_id}"', file=sys.stderr)
         result = None
         for controlled in self._controlled:
             if controlled.center_id == center_id:
@@ -354,12 +356,13 @@ class CIFP:
         return result
 
     def get_restrictive(self) -> list:
-        print(f"Fetching all restrictive airspace.")
+        print(f"Fetching all restrictive airspace.", file=sys.stderr)
         return self._restrictive
 
     def find_restrictive_match(self, restrictive_name: str) -> list:
         print(
-            f'Finding all restrictive airspace with names containing "{restrictive_name}".'
+            f'Finding all restrictive airspace with names containing "{restrictive_name}".',
+            file=sys.stderr
         )
         result = []
         for restrictive in self._restrictive:
@@ -371,7 +374,7 @@ class CIFP:
         return result
 
     def find_restrictive(self, restrictive_name: str) -> Union[CIFPRestrictiveAirspace, None]:
-        print(f'Finding restrictive airspace with name "{restrictive_name}".')
+        print(f'Finding restrictive airspace with name "{restrictive_name}".', file=sys.stderr)
         result = None
         for restrictive in self._restrictive:
             if restrictive.restrictive_name == restrictive_name:
