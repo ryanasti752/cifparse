@@ -272,7 +272,7 @@ class CIFP:
         print(f"Fetching all airports.")
         return self._airport
 
-    def find_airport(self, airport_id: str) -> CIFPAirport | None:
+    def find_airport(self, airport_id: str) -> Union[CIFPAirport, None]:
         print(f'Finding airport with ID "{airport_id}"')
         result = None
         for airport in self._airport:
@@ -284,7 +284,7 @@ class CIFP:
         print(f"Fetching all heliports.")
         return self._heliport
 
-    def find_heliport(self, heliport_id: str) -> CIFPHeliport | None:
+    def find_heliport(self, heliport_id: str) -> Union[CIFPHeliport, None]:
         print(f'Finding heliport with ID "{heliport_id}"')
         result = None
         for heliport in self._heliport:
@@ -297,7 +297,7 @@ class CIFP:
         print(f"Fetching all airways.")
         return self._airway
 
-    def find_airway(self, airway_id: str) -> CIFPAirway | None:
+    def find_airway(self, airway_id: str) -> Union[CIFPAirway, None]:
         print(f'Finding airway with ID "{airway_id}"')
         result = None
         for airway in self._airway:
@@ -309,7 +309,7 @@ class CIFP:
         print(f"Fetching all NDBs.")
         return self._ndb
 
-    def find_ndb(self, ndb_id: str) -> CIFP_NDB | None:
+    def find_ndb(self, ndb_id: str) -> Union[CIFP_NDB, None]:
         print(f'Finding NDB with ID "{ndb_id}"')
         result = None
         for ndb in self._ndb:
@@ -321,7 +321,7 @@ class CIFP:
         print(f"Fetching all VHF/DMEs.")
         return self._vhf_dme
 
-    def find_vhf_dme(self, vhf_dme_id: str) -> CIFP_VHF_DME | None:
+    def find_vhf_dme(self, vhf_dme_id: str) -> Union[CIFP_VHF_DME, None]:
         print(f'Finding VHF/DME navaid with ID "{vhf_dme_id}"')
         result = None
         for vhf_dme in self._vhf_dme:
@@ -333,7 +333,7 @@ class CIFP:
         print(f"Fetching all waypoints.")
         return self._waypoint
 
-    def find_waypoint(self, waypoint_id: str) -> CIFPWaypoint | None:
+    def find_waypoint(self, waypoint_id: str) -> Union[CIFPWaypoint, None]:
         print(f'Finding waypoint with ID "{waypoint_id}"')
         result = None
         for waypoint in self._waypoint:
@@ -345,7 +345,7 @@ class CIFP:
         print(f"Fetching all controlled airspace.")
         return self._controlled
 
-    def find_controlled(self, center_id: str) -> CIFPControlledAirspace | None:
+    def find_controlled(self, center_id: str) -> Union[CIFPControlledAirspace, None]:
         print(f'Finding controlled airspace with center point "{center_id}"')
         result = None
         for controlled in self._controlled:
@@ -370,7 +370,7 @@ class CIFP:
                 result.append(restrictive.restrictive_name)
         return result
 
-    def find_restrictive(self, restrictive_name: str) -> CIFPRestrictiveAirspace | None:
+    def find_restrictive(self, restrictive_name: str) -> Union[CIFPRestrictiveAirspace, None]:
         print(f'Finding restrictive airspace with name "{restrictive_name}".')
         result = None
         for restrictive in self._restrictive:
