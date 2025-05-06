@@ -2,6 +2,7 @@ from .cifp_functions import chunk, clean_value
 from .cifp_procedure_subsegment import CIFPProcedureSubsegment
 
 from sqlite3 import Cursor
+from typing import Union
 
 # FOR COLLECTION OF SUBSEGMENTS OF PD/PE/PF AND HD/HE/HF
 
