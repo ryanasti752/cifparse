@@ -24,7 +24,7 @@ class CIFPProcedureSegment:
             subsegment.from_lines(sub_chunk)
             self.subsegments.append(subsegment)
 
-    def _translate_route_type(self, sub_code: str, route_type: str) -> str | None:
+    def _translate_route_type(self, sub_code: str, route_type: str) -> Union[str, None]:
         result = None
         if sub_code == "D":
             if route_type == "0":
